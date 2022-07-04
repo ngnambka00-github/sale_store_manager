@@ -4,6 +4,7 @@ package com.ltnc.dao;
 import com.ltnc.connection.ConnectData;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Customer;
+import com.ltnc.entity.Product;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -76,7 +77,6 @@ public class UtilDAO {
         return row;
     }
     
-    
     public static List<Customer> getCustomers(String query, Object ... parameters) {
         
         // initialize student list
@@ -135,5 +135,65 @@ public class UtilDAO {
         }
 
         return listCategory;
+    }
+    
+    public static Category get1Category(String query, Object ... parameters) {
+        Category c = null;
+        
+        try {
+            // create connect to database
+            Connection conn = ConnectData.getConnection();
+
+            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            if (rs.next()) {
+                int idCategory = rs.getInt(1);
+                String name = rs.getString(2);
+                String description = rs.getString(3);
+                String urlImage = rs.getString(4);
+                
+                c = new Category(idCategory, name, description, urlImage);
+            }
+            // close connection
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return c;
+    }
+    
+    public static List<Product> getProducts(String query, Object ... parameters) {
+        List<Product> listProduct = new ArrayList<>();
+        
+        try {
+            // create connect to database
+            Connection conn = ConnectData.getConnection();
+
+            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int idProduct = rs.getInt(1);
+                String name = rs.getString(2);
+                double price = rs.getDouble(3);
+                String urlImage = rs.getString(4);
+                int idCategory = rs.getInt(5);
+                int quantity = rs.getInt(6);
+                
+                Category category = CategoryDAO.getCategoryById(idCategory);
+                
+                Product p = new Product(idProduct, name, price, urlImage, category, quantity);
+                listProduct.add(p);
+            }
+            // close connection
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return listProduct;
     }
 }

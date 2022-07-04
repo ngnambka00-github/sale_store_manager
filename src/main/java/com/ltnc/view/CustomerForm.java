@@ -523,6 +523,15 @@ public class CustomerForm extends javax.swing.JFrame {
             listCustomer = CustomerDAO.getAllCustomer();
         }
         uploadCustomerTable(listCustomer);
+        
+        // Rest UI
+        clearText();
+        activateInputForm(false);
+        activateFunctionButton(false);
+        activateExitTask(false);
+        btnAdd.setEnabled(true);
+        activateButtonAdd = false;
+        activateButtonEdit = false;
     }//GEN-LAST:event_btnSearchByNameActionPerformed
     
     // Su kien click button search By Phone Number
@@ -536,6 +545,15 @@ public class CustomerForm extends javax.swing.JFrame {
             listCustomer = CustomerDAO.getAllCustomer();
         }
         uploadCustomerTable(listCustomer);
+        
+        // Rest UI
+        clearText();
+        activateInputForm(false);
+        activateFunctionButton(false);
+        activateExitTask(false);
+        btnAdd.setEnabled(true);
+        activateButtonAdd = false;
+        activateButtonEdit = false;
     }//GEN-LAST:event_btnSearchByPhoneActionPerformed
 
 

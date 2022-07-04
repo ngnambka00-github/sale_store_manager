@@ -16,36 +16,12 @@ import java.util.List;
 public class ProductDAO {
     private static String GET_ALL_PRODUCT = "SELECT * FROM product";
     private static String GET_PRODUCT_BY_ID = "SELECT * FROM product WHERE id_product=?";
-
+    private static String GET_PRODUCTS_BY_NAME = "SELECT * FROM product WHERE name LIKE ?";
+    private static String QUERY_UPDATE_PRODUCT = "UPDATE product SET name=?, price=?, url_image=?, id_category=?, quantity=? WHERE id_product=?";
     
     public static List<Product> getAllProduct() {
-        List<Product> listProduct = new ArrayList<>();
-        
-        try {
-            Connection conn = ConnectData.getConnection();
-            Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery(ProductDAO.GET_ALL_PRODUCT);
-            
-            while (rs.next()) {
-                int idProduct = rs.getInt(1);
-                String name = rs.getString(2);
-                double price = rs.getDouble(3);
-                String urlImage = rs.getString(4);
-                int idCategory = rs.getInt(5);
-                int quantity = rs.getInt(6);
-                
-                Category category = CategoryDAO.getCategoryById(idCategory);
-                
-                Product p = new Product(idProduct, name, price, urlImage, category, quantity);
-                listProduct.add(p);
-            }
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return listProduct;
+        return UtilDAO.getProducts(ProductDAO.GET_ALL_PRODUCT);
     }
-    
     
     public static Product getProductById(int id) {
         Product p = null;
@@ -74,5 +50,21 @@ public class ProductDAO {
             ex.printStackTrace();
         }
         return p;
+    }
+
+    public static List<Product> getProductsByName(String name) {
+        String str = "%" + name + "%";
+        return UtilDAO.getProducts(GET_PRODUCTS_BY_NAME, str);
+    }
+    
+    public static int updateProduct(Product p) {
+        return UtilDAO.queryUpdate(
+                QUERY_UPDATE_PRODUCT, 
+                p.getName(), 
+                p.getPrice(), 
+                p.getUrlImage(), 
+                p.getCategory().getIdCategory(), 
+                p.getQuantity(), 
+                p.getIdProduct());
     }
 }

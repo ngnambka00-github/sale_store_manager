@@ -3,10 +3,13 @@ package com.ltnc.view;
 
 import com.ltnc.dao.CategoryDAO;
 import com.ltnc.dao.ProductDAO;
+import com.ltnc.dao.UtilDAO;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Product;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +19,8 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
@@ -25,8 +30,10 @@ public class HomeForm extends javax.swing.JFrame {
 
     DefaultTableModel modelProduct = null;
     DefaultComboBoxModel modelCategory = null;
+    String urlDefault = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
+    String urlImage = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
+    boolean activateEditProduct = false;
     
-    List<Product> listProduct = null;
     List<Category> listCategory = null;
     
     public HomeForm() {
@@ -45,41 +52,68 @@ public class HomeForm extends javax.swing.JFrame {
         columnOrderListModel.getColumn(2).setPreferredWidth(70);
         columnOrderListModel.getColumn(3).setPreferredWidth(100);
         
+        loadImageToView(urlDefault);
+        
         // Thiet lap giao dien co ban
         tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         tableOrderList.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         
+        modelProduct = (DefaultTableModel) tableProduct.getModel();
+        modelCategory = (DefaultComboBoxModel) cbCategory.getModel();
+        
+        
+        List<Product> listProduct = ProductDAO.getAllProduct();
+        updateProductToTable(listProduct);
+        uploadCategoryCombobox();
+    }
+    
+    // Clear form text
+    public void clearText() {
+        // Load default image
         BufferedImage img = null;
         try {
-             img = ImageIO.read(new File("/home/nguyennam/Pictures/meal.jpg"));
+             img = ImageIO.read(new File(urlDefault));
         } catch (IOException ex) {
             Logger.getLogger(HomeForm.class.getName()).log(Level.SEVERE, null, ex);
         }
         Image dimg = img.getScaledInstance(lblImage.getWidth(), lblImage.getHeight(),Image.SCALE_SMOOTH);
         lblImage.setIcon(new ImageIcon(dimg));
         
-        
-        modelProduct = (DefaultTableModel) tableProduct.getModel();
-        modelCategory = (DefaultComboBoxModel) cbCategory.getModel();
-        
-        
-        updateProductToTable();
-        uploadCategoryCombobox();
+        txtIdProduct.setText("");
+        updateSelectIndexCategoryCombobox(-1);
+        txtPrice.setText("");
+        txtQuantity.setText("");
+        txtProductName.setText("");
     }
     
-    public void updateProductToTable() {
-        modelProduct.getDataVector().removeAllElements();
-        revalidate();
+    public void loadImageToView(String path) {
+        BufferedImage img = null;
+        try {
+             img = ImageIO.read(new File(path));
+        } catch (IOException ex) {
+            Logger.getLogger(HomeForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Image dimg = img.getScaledInstance(lblImage.getWidth(), lblImage.getHeight(),Image.SCALE_SMOOTH);
+        lblImage.setIcon(new ImageIcon(dimg));
+    }
+    
+    public void updateProductToTable(List<Product> listProduct) {
+//        modelProduct.getDataVector().removeAllElements();
+//        revalidate();
+
+        while (modelProduct.getRowCount() != 0) {
+            modelProduct.removeRow(0);
+        }
         
-        listProduct = ProductDAO.getAllProduct();
-        for (int i = 0; i < listProduct.size(); i++) {
-            Product p = listProduct.get(i);
-            modelProduct.addRow(new Object[] {
-                p.getIdProduct(), p.getName(), p.getPrice(), p.getQuantity()
-            });
+        if (!listProduct.isEmpty()) {
+            for (int i = 0; i < listProduct.size(); i++) {
+                Product p = listProduct.get(i);
+                modelProduct.addRow(new Object[] {
+                    p.getIdProduct(), p.getName(), p.getPrice(), p.getQuantity()
+                });
+            }
         }
     }
-    
     
     public void updateDetailProduct(Product p) {
         if (p != null) {
@@ -112,11 +146,44 @@ public class HomeForm extends javax.swing.JFrame {
     public void updateSelectIndexCategoryCombobox(int index) {
         cbCategory.setSelectedIndex(index);
     }
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+    
+    public void activateInputForm(boolean activate) {
+        txtPrice.setEditable(activate);
+        txtQuantity.setEditable(activate);
+        txtProductName.setEditable(activate);
+        cbCategory.setEnabled(activate);
+        
+        if (activate) 
+        {
+            lblImage.addMouseListener(imageMouseAdapter);
+        }
+        else 
+        {
+            lblImage.removeMouseListener(imageMouseAdapter);
+        }
+    }
+    
+    public MouseAdapter imageMouseAdapter = new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setCurrentDirectory(new java.io.File("/home/nguyennam/Documents/JavaProject/image/product"));
+                    chooser.setDialogTitle("Chooser Image");
+                    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    chooser.setAcceptAllFileFilterUsed(false);
+
+                    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                        urlImage = chooser.getSelectedFile().toString();
+                        loadImageToView(urlImage);
+                    } else {
+//                        urlImage = urlDefault;
+                    }
+                    
+                }
+                
+            };
+    
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -146,7 +213,7 @@ public class HomeForm extends javax.swing.JFrame {
         btnAddToCart = new javax.swing.JButton();
         btnDeleteFromCart = new javax.swing.JButton();
         txtNumberOrderItem = new javax.swing.JTextField();
-        txtExitTask = new javax.swing.JButton();
+        btnExitTask = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableOrderList = new javax.swing.JTable();
@@ -201,6 +268,9 @@ public class HomeForm extends javax.swing.JFrame {
     tableProduct.addMouseListener(new java.awt.event.MouseAdapter() {
         public void mouseClicked(java.awt.event.MouseEvent evt) {
             tableProductMouseClicked(evt);
+        }
+        public void mouseEntered(java.awt.event.MouseEvent evt) {
+            tableProductMouseEntered(evt);
         }
     });
     jScrollPane1.setViewportView(tableProduct);
@@ -340,12 +410,12 @@ public class HomeForm extends javax.swing.JFrame {
 
     txtNumberOrderItem.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
-    txtExitTask.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
-    txtExitTask.setText("Exit");
-    txtExitTask.setEnabled(false);
-    txtExitTask.addActionListener(new java.awt.event.ActionListener() {
+    btnExitTask.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    btnExitTask.setText("Exit");
+    btnExitTask.setEnabled(false);
+    btnExitTask.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-            txtExitTaskActionPerformed(evt);
+            btnExitTaskActionPerformed(evt);
         }
     });
 
@@ -405,7 +475,7 @@ public class HomeForm extends javax.swing.JFrame {
                             .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(txtExitTask, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnExitTask, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGap(8, 8, 8))))
     );
     jPanel2Layout.setVerticalGroup(
@@ -447,7 +517,7 @@ public class HomeForm extends javax.swing.JFrame {
                         .addComponent(btnEditProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnAddToCart, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(btnDeleteFromCart, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtExitTask, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnExitTask, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGroup(jPanel2Layout.createSequentialGroup()
                     .addComponent(btnDeleteProduct, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGap(0, 0, Short.MAX_VALUE)))
@@ -621,11 +691,29 @@ public class HomeForm extends javax.swing.JFrame {
 
     pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    // Su kien thuc hien search
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        // TODO add your handling code here:
         String text = txtSearch.getText();
-        System.out.println("Test: " + text);
+        
+        List<Product> listProduct = null;
+        if (text.length() != 0) 
+        {
+            listProduct = ProductDAO.getProductsByName(text);
+        } 
+        else
+        {
+            listProduct = ProductDAO.getAllProduct();
+        }
+        updateProductToTable(listProduct);
+        
+        // Reset UI
+        clearText();
+        btnAddNewProduct.setEnabled(true);
+        btnEditProduct.setEnabled(false);
+        btnExitTask.setEnabled(false);
+        btnDeleteProduct.setEnabled(false);
+        activateInputForm(false);
     }//GEN-LAST:event_btnSearchActionPerformed
 
     private void txtIdProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdProductActionPerformed
@@ -652,8 +740,69 @@ public class HomeForm extends javax.swing.JFrame {
         
     }//GEN-LAST:event_btnAddNewProductActionPerformed
 
+    // Su kien khi click vao button Edit
     private void btnEditProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditProductActionPerformed
-        // TODO add your handling code here:
+        activateEditProduct = !activateEditProduct;
+        
+        if (activateEditProduct) 
+        {
+            // Reset UI
+            btnAddNewProduct.setEnabled(false);
+            btnDeleteProduct.setEnabled(false);
+            btnExitTask.setEnabled(true);
+
+            activateInputForm(true);
+            txtProductName.requestFocus();
+        } 
+        else 
+        {
+            String name = txtProductName.getText();
+            if (name.length() == 0) {
+                JOptionPane.showMessageDialog(null, "Name Product is required", "Error", JOptionPane.ERROR_MESSAGE);
+                txtProductName.requestFocus();
+                activateEditProduct = true;
+                return;
+            }
+            
+            String priceStr = txtPrice.getText();
+            if (priceStr.length() == 0) {
+                JOptionPane.showMessageDialog(null, "Price Product is required", "Error", JOptionPane.ERROR_MESSAGE);
+                txtPrice.requestFocus();
+                activateEditProduct = true;
+                return;
+            }
+            double price = Double.parseDouble(priceStr);
+            
+            String quantityStr = txtQuantity.getText();
+            if (priceStr.length() == 0) {
+                JOptionPane.showMessageDialog(null, "Quantity of Product is required", "Error", JOptionPane.ERROR_MESSAGE);
+                txtQuantity.requestFocus();
+                activateEditProduct = true;
+                return;
+            }
+            int quantity = Integer.parseInt(quantityStr);
+            
+            int idProduct = Integer.parseInt(txtIdProduct.getText());
+            String categoryStr = cbCategory.getSelectedItem().toString();
+            Category c = CategoryDAO.getCategoryByName(categoryStr);
+            
+            Product product = new Product(idProduct, name, price, urlImage, c, quantity);
+            
+            int row = ProductDAO.updateProduct(product);
+            if (row != 0) {
+                JOptionPane.showMessageDialog(null, "Update Product Successfully");
+                
+                // Update frentend
+                List<Product> listProduct = ProductDAO.getAllProduct();
+                updateProductToTable(listProduct);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error Server. Not Update Into Database", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            clearText();
+            activateInputForm(false);
+            btnExitTask.setEnabled(false);
+            activateEditProduct = false;
+        }
     }//GEN-LAST:event_btnEditProductActionPerformed
 
     private void btnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteProductActionPerformed
@@ -695,7 +844,6 @@ public class HomeForm extends javax.swing.JFrame {
     private void tableProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseClicked
         int index = tableProduct.getSelectedRow();
         
-       
         int idProduct = Integer.parseInt(modelProduct.getValueAt(index, 0).toString());  
         Product p = ProductDAO.getProductById(idProduct);
         Category c = p.getCategory();
@@ -707,11 +855,32 @@ public class HomeForm extends javax.swing.JFrame {
             }
         }
         updateDetailProduct(p);
+        urlImage = p.getUrlImage();
+        
+        // Reset UI
+        btnEditProduct.setEnabled(true);
+        btnDeleteProduct.setEnabled(true);
+        btnAddNewProduct.setEnabled(true);
+        btnExitTask.setEnabled(false);
     }//GEN-LAST:event_tableProductMouseClicked
 
-    private void txtExitTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtExitTaskActionPerformed
+    // Su kien click vao button Exit Task
+    private void btnExitTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitTaskActionPerformed
+        // set UI
+        btnExitTask.setEnabled(false);
+        btnAddNewProduct.setEnabled(true);
+        btnDeleteProduct.setEnabled(false);
+        btnEditProduct.setEnabled(false);
+        activateEditProduct = false;
+        
+        activateInputForm(false);
+        
+        tableProductMouseClicked(null);
+    }//GEN-LAST:event_btnExitTaskActionPerformed
+
+    private void tableProductMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseEntered
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtExitTaskActionPerformed
+    }//GEN-LAST:event_tableProductMouseEntered
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -724,6 +893,7 @@ public class HomeForm extends javax.swing.JFrame {
     private javax.swing.JButton btnDeleteProduct;
     private javax.swing.JButton btnDiscountForm;
     private javax.swing.JButton btnEditProduct;
+    private javax.swing.JButton btnExitTask;
     private javax.swing.JButton btnExportBill;
     private javax.swing.JButton btnOrdersForm;
     private javax.swing.JButton btnSearch;
@@ -746,7 +916,6 @@ public class HomeForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblImage;
     private javax.swing.JTable tableOrderList;
     private javax.swing.JTable tableProduct;
-    private javax.swing.JButton txtExitTask;
     private javax.swing.JTextField txtIdProduct;
     private javax.swing.JTextField txtNumberOrderItem;
     private javax.swing.JTextField txtPrice;

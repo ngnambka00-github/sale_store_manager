@@ -20,6 +20,10 @@ public class Product {
         this.category = category;
         this.quantity = quantity;
     }
+    
+    public Product(Product p) {
+        this(p.getIdProduct(), p.getName(), p.getPrice(), p.getUrlImage(), p.getCategory(), p.getQuantity());
+    }
 
     public int getIdProduct() {
         return idProduct;
