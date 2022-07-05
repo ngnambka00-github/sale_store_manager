@@ -4,6 +4,8 @@ package com.ltnc.view;
 import com.ltnc.dao.CustomerDAO;
 import com.ltnc.entity.Customer;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -12,6 +14,7 @@ import javax.swing.table.TableColumnModel;
 
 public class CustomerForm extends javax.swing.JFrame {
     
+    private HomeForm homeForm;
     DefaultTableModel modelCustomer = null;
     
     boolean activateButtonAdd = false;
@@ -19,7 +22,13 @@ public class CustomerForm extends javax.swing.JFrame {
     
     public CustomerForm() {
         initComponents();
+    }
+    
+    public CustomerForm(HomeForm homeForm) {
+        initComponents();
         this.setTitle("Customer Form");
+        
+        this.homeForm = homeForm;
         
         tableCustomer.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         TableColumnModel columnModel = tableCustomer.getColumnModel();
@@ -31,6 +40,13 @@ public class CustomerForm extends javax.swing.JFrame {
         modelCustomer = (DefaultTableModel) tableCustomer.getModel();
         List<Customer> listCustomer = CustomerDAO.getAllCustomer();
         uploadCustomerTable(listCustomer);
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                homeForm.setActiveCustomerForm(false);
+            }
+        });
     }
     
     public void uploadCustomerTable(List<Customer> listCustomer) {
@@ -391,6 +407,7 @@ public class CustomerForm extends javax.swing.JFrame {
 
     private void btnExitTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitTaskActionPerformed
         btnExitTask.setEnabled(false);
+        btnEdit.setText("Edit");
         
         activateInputForm(false);
         clearText();
@@ -486,6 +503,7 @@ public class CustomerForm extends javax.swing.JFrame {
             btnExitTask.setEnabled(true);
 
             activateInputForm(true);
+            btnEdit.setText("Update");
         } else {
             int idCustomer = Integer.parseInt(txtIdCustomer.getText());
             String name = txtName.getText();
@@ -524,6 +542,7 @@ public class CustomerForm extends javax.swing.JFrame {
             btnExitTask.setEnabled(false);
             activateButtonEdit = false;
             
+            btnEdit.setText("Edit");
         }
     }//GEN-LAST:event_btnEditActionPerformed
 

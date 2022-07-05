@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,10 +18,14 @@ import java.util.logging.Logger;
 
 
 public class UtilDAO {
-    private static PreparedStatement fillQuery(Connection conn, String query, Object ... parameters) { 
+    private static PreparedStatement fillQuery(Connection conn, String query, boolean returnKey, Object ... parameters) { 
         PreparedStatement preparedStatement = null;
         try {
-            preparedStatement = conn.prepareStatement(query);
+            if (returnKey) {
+                preparedStatement = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            } else {
+                preparedStatement = conn.prepareStatement(query);
+            }
             for (int i = 0; i < parameters.length; i++) {
                 if (parameters[i] == null) 
                 {
@@ -65,7 +70,7 @@ public class UtilDAO {
             // create connect to database
             Connection conn = ConnectData.getConnection();
             
-            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
             row = preparedStatement.executeUpdate();
 
             // close connection
@@ -75,6 +80,29 @@ public class UtilDAO {
         }
 
         return row;
+    }
+     
+    public static int insertReturnKey(String query, Object ... parameters) {
+        int key = -1;
+        
+        try {
+            Connection conn = ConnectData.getConnection();
+            PreparedStatement pstm = fillQuery(conn, query, true, parameters);
+            
+            pstm.executeUpdate();
+            ResultSet generatedKeys = pstm.getGeneratedKeys();
+            
+            if (generatedKeys.next()) {
+                key = generatedKeys.getInt(1);
+            }
+            
+            conn.close();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return key;
     }
     
     public static List<Customer> getCustomers(String query, Object ... parameters) {
@@ -86,7 +114,7 @@ public class UtilDAO {
             // create connect to database
             Connection conn = ConnectData.getConnection();
 
-            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            PreparedStatement preparedStatement = fillQuery(conn, query, false,parameters);
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
@@ -116,7 +144,7 @@ public class UtilDAO {
             // create connect to database
             Connection conn = ConnectData.getConnection();
 
-            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
 
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -145,7 +173,7 @@ public class UtilDAO {
             // create connect to database
             Connection conn = ConnectData.getConnection();
 
-            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
             ResultSet rs = preparedStatement.executeQuery();
 
             if (rs.next()) {
@@ -172,7 +200,7 @@ public class UtilDAO {
             // create connect to database
             Connection conn = ConnectData.getConnection();
 
-            PreparedStatement preparedStatement = fillQuery(conn, query, parameters);
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
 
             ResultSet rs = preparedStatement.executeQuery();
 

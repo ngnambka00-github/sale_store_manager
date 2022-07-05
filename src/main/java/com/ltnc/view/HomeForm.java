@@ -46,6 +46,13 @@ public class HomeForm extends javax.swing.JFrame {
     
     private Cart cart = null;
     
+    private boolean activeOrderForm = false;
+    private boolean activeCustomerForm = false;
+    private boolean activeCategoryForm = false;
+    private boolean activeAddNewProductForm = false;
+    private boolean activeDiscountForm = false;
+    private boolean activeExportBillForm = false;
+    
     public HomeForm() {
         initComponents();
         this.setTitle("Home Form");
@@ -742,7 +749,7 @@ public class HomeForm extends javax.swing.JFrame {
                 .addComponent(btnCategoryForm)
                 .addComponent(btnOrdersForm)
                 .addComponent(btnDiscountForm))
-            .addContainerGap(60, Short.MAX_VALUE))
+            .addContainerGap(59, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -772,7 +779,8 @@ public class HomeForm extends javax.swing.JFrame {
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addContainerGap(20, Short.MAX_VALUE))
     );
 
     pack();
@@ -823,10 +831,13 @@ public class HomeForm extends javax.swing.JFrame {
 
     // Button add new Product
     private void btnAddNewProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewProductActionPerformed
-        AddProductForm pf = new AddProductForm(this);
-        pf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        pf.setVisible(true);
-        
+        if (!activeAddNewProductForm) {
+            activeAddNewProductForm = true;
+            
+            AddProductForm pf = new AddProductForm(this);
+            pf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            pf.setVisible(true);
+        }
     }//GEN-LAST:event_btnAddNewProductActionPerformed
 
     // Su kien khi click vao button Edit
@@ -842,6 +853,7 @@ public class HomeForm extends javax.swing.JFrame {
 
             activateInputForm(true);
             txtProductName.requestFocus();
+            btnEditProduct.setText("Update");
         } 
         else 
         {
@@ -903,6 +915,8 @@ public class HomeForm extends javax.swing.JFrame {
             resetFunctionButton();
             activateEditProduct = false;
             tableProductMouseClicked(null);
+            
+            btnEditProduct.setText("Edit");
         }
     }//GEN-LAST:event_btnEditProductActionPerformed
 
@@ -1036,28 +1050,45 @@ public class HomeForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteFromCartActionPerformed
 
     private void btnCustomerFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerFormActionPerformed
-        CustomerForm cf = new CustomerForm();
-        cf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        cf.setVisible(true);
+        if (!activeCustomerForm) {
+            System.out.println("Index: " + cbCategory.getSelectedIndex());
+            activeCustomerForm = true;
+            
+            CustomerForm cf = new CustomerForm(this);
+            cf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            cf.setVisible(true);
+        }
     }//GEN-LAST:event_btnCustomerFormActionPerformed
 
     // Su kien click vao button Category
     private void btnCategoryFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryFormActionPerformed
-        CategoryForm cf = new CategoryForm(this);
-        cf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        cf.setVisible(true);
+        if (!activeCategoryForm) {
+            activeCategoryForm = true;
+            
+            CategoryForm cf = new CategoryForm(this);
+            cf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            cf.setVisible(true);
+        }
     }//GEN-LAST:event_btnCategoryFormActionPerformed
 
     private void btnOrdersFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOrdersFormActionPerformed
-        OrderForm of = new OrderForm();
-        of.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        of.setVisible(true);
+        if (!activeOrderForm) {
+            activeOrderForm = true;
+            
+            OrderForm of = new OrderForm(this);
+            of.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            of.setVisible(true);
+        }
     }//GEN-LAST:event_btnOrdersFormActionPerformed
 
     private void btnDiscountFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDiscountFormActionPerformed
-        DiscountForm df = new DiscountForm();
-        df.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        df.setVisible(true);
+        if (!activeDiscountForm) {
+            activeDiscountForm = true;
+            
+            DiscountForm df = new DiscountForm(this);
+            df.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            df.setVisible(true);
+        }
     }//GEN-LAST:event_btnDiscountFormActionPerformed
 
     private void tableProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseClicked
@@ -1119,6 +1150,8 @@ public class HomeForm extends javax.swing.JFrame {
         activateInputForm(false);
         
         tableProductMouseClicked(null);
+        
+        btnEditProduct.setText("Edit");
     }//GEN-LAST:event_btnExitTaskActionPerformed
 
     private void tableProductMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseEntered
@@ -1126,9 +1159,13 @@ public class HomeForm extends javax.swing.JFrame {
     }//GEN-LAST:event_tableProductMouseEntered
 
     private void btnExportBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportBillActionPerformed
-        ExportBillForm ebf = new ExportBillForm();
-        ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        ebf.setVisible(true);
+        if (!activeExportBillForm) {
+            activeExportBillForm = true;
+            
+            ExportBillForm ebf = new ExportBillForm();
+            ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            ebf.setVisible(true);
+        }
     }//GEN-LAST:event_btnExportBillActionPerformed
 
     // Event clear bill
@@ -1188,6 +1225,59 @@ public class HomeForm extends javax.swing.JFrame {
         updateViewCart();
     }//GEN-LAST:event_btnClearBillActionPerformed
     
+    public void updateCategoryCbFromOtherFrame(Demand demand, Category category) {
+        if (demand == Demand.DEMAND_ADD_FROM_CATEGORY_TO_HOME) {
+            listCategory.add(category);
+            modelCategory.addElement(category.getName());
+            return;
+        }
+        
+        if (demand == Demand.DEMAND_EDIT_FROM_CATEGORY_TO_HOME) {
+            int selectedIndex = cbCategory.getSelectedIndex();
+            
+            // Update listCategory in this form
+            int indexCheck = 0;
+            for (int i = 0; i < listCategory.size(); i++) {
+                Category ct = listCategory.get(i);
+                
+                if (ct.getIdCategory() == category.getIdCategory()) {
+                    ct.setNewCategory(category);
+                    indexCheck = i;
+                    break;
+                }
+            }
+            
+            // Update listProduct
+            for (Product pr : listProduct) {
+                if (pr.getCategory().getIdCategory() == category.getIdCategory()) {
+                    pr.getCategory().setNewCategory(category);
+                }
+            }
+            
+            // Update cbCategory in view
+            uploadCategoryCombobox();
+            cbCategory.setSelectedIndex(selectedIndex);
+            
+            return;
+        }
+        
+        if (demand == demand.DEMAND_DELETE_FROM_CATEGORY_TO_HOME) {
+            int deletedIndex = 0;
+            for (int i = 0; i < listCategory.size(); i++) {
+                Category ct = listCategory.get(i);
+                if (ct.getIdCategory() == category.getIdCategory()) {
+                    deletedIndex = i;
+                    break;
+                }
+            }
+            
+            listCategory.remove(deletedIndex);
+            modelCategory.removeElementAt(deletedIndex);
+            
+            return;
+        }
+    }
+    
     public boolean getIsSearch() {
         return isSearch;
     }
@@ -1200,6 +1290,31 @@ public class HomeForm extends javax.swing.JFrame {
         return listProduct;
     }
 
+    public void setActiveOrderForm(boolean activeOrderForm) {
+        this.activeOrderForm = activeOrderForm;
+    }
+
+    public void setActiveCustomerForm(boolean activeCustomerForm) {
+        this.activeCustomerForm = activeCustomerForm;
+    }
+
+    public void setActiveCategoryForm(boolean activeCategoryForm) {
+        this.activeCategoryForm = activeCategoryForm;
+    }
+
+    public void setActiveAddNewProductForm(boolean activeAddNewProductForm) {
+        this.activeAddNewProductForm = activeAddNewProductForm;
+    }
+
+    public void setActiveDiscountForm(boolean activeDiscountForm) {
+        this.activeDiscountForm = activeDiscountForm;
+    }
+
+    public void setActiveExportBillForm(boolean activeExportBillForm) {
+        this.activeExportBillForm = activeExportBillForm;
+    }
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddNewProduct;
     private javax.swing.JButton btnAddToCart;

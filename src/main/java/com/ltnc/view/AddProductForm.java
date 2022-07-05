@@ -8,6 +8,8 @@ import com.ltnc.entity.Product;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +36,7 @@ public final class AddProductForm extends javax.swing.JFrame {
     
     public AddProductForm(HomeForm homeForm) {
         initComponents();
+        this.setTitle("Add Product Form");
         this.homeForm = homeForm;
         
         loadImageToView(urlDefault);
@@ -58,6 +61,13 @@ public final class AddProductForm extends javax.swing.JFrame {
             }
         });
         txtProductName.requestFocus();
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                homeForm.setActiveAddNewProductForm(false);
+            }
+        });
     }
     
     public void loadImageToView(String path) {

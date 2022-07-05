@@ -23,6 +23,13 @@ public class Category {
         this.description = description;
         this.urlImage = urlImage;
     }
+    
+    public Category(Category ct) {
+        this.idCategory = ct.idCategory;
+        this.name = ct.name;
+        this.description = ct.description;
+        this.urlImage = ct.urlImage;
+    }
 
     public int getIdCategory() {
         return idCategory;
@@ -54,6 +61,13 @@ public class Category {
 
     public void setUrlImage(String urlImage) {
         this.urlImage = urlImage;
+    }
+    
+    public void setNewCategory(Category ct) {
+        this.idCategory = ct.idCategory;
+        this.name = ct.name;
+        this.description = ct.description;
+        this.urlImage = ct.urlImage;
     }
 
     @Override

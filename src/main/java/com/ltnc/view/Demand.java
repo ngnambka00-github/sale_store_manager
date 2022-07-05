@@ -1,0 +1,9 @@
+
+package com.ltnc.view;
+
+
+public enum Demand {
+    DEMAND_ADD_FROM_CATEGORY_TO_HOME, 
+    DEMAND_DELETE_FROM_CATEGORY_TO_HOME,
+    DEMAND_EDIT_FROM_CATEGORY_TO_HOME
+}
