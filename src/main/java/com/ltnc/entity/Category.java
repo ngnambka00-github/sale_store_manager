@@ -10,6 +10,13 @@ public class Category {
     public Category() {
     }
 
+    public Category(String name, String description, String urlImage) {
+        this.name = name;
+        this.description = description;
+        this.urlImage = urlImage;
+    }
+
+    
     public Category(int idCategory, String name, String description, String urlImage) {
         this.idCategory = idCategory;
         this.name = name;

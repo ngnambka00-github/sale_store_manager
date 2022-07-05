@@ -15,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,8 +37,12 @@ public class HomeForm extends javax.swing.JFrame {
     
     private String urlDefault = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
     private String urlImage = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
+    
     private boolean activateEditProduct = false;
     private List<Category> listCategory = null;
+    private List<Product> listProduct = null;
+    private List<Product> listSearchProduct = null;
+    private boolean isSearch = false;
     
     private Cart cart = null;
     
@@ -68,7 +73,9 @@ public class HomeForm extends javax.swing.JFrame {
         modelCategory = (DefaultComboBoxModel) cbCategory.getModel();
         
         
-        List<Product> listProduct = ProductDAO.getAllProduct();
+        listProduct = ProductDAO.getAllProduct();
+        listSearchProduct = new ArrayList<>();
+        
         updateProductToTable(listProduct);
         uploadCategoryCombobox();
         
@@ -619,6 +626,11 @@ public class HomeForm extends javax.swing.JFrame {
     btnClearBill.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnClearBill.setText("Clear Bill");
     btnClearBill.setEnabled(false);
+    btnClearBill.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnClearBillActionPerformed(evt);
+        }
+    });
 
     txtTotalItem.setEditable(false);
     txtTotalItem.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
@@ -770,16 +782,22 @@ public class HomeForm extends javax.swing.JFrame {
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         String text = txtSearch.getText();
         
-        List<Product> listProduct = null;
         if (text.length() != 0) 
-        {
-            listProduct = ProductDAO.getProductsByName(text);
+        {            
+            listSearchProduct = new ArrayList<>();
+            for (Product p : listProduct) {
+                if (p.getName().toLowerCase().contains(text.toLowerCase())) {
+                    listSearchProduct.add(p);
+                } 
+            }
+            isSearch = true;
+            updateProductToTable(listSearchProduct);
         } 
         else
         {
-            listProduct = ProductDAO.getAllProduct();
+            isSearch = false;
+            updateProductToTable(listProduct);
         }
-        updateProductToTable(listProduct);
         
         // Reset UI
         clearText();
@@ -852,7 +870,7 @@ public class HomeForm extends javax.swing.JFrame {
                 return;
             }
             int quantity = Integer.parseInt(quantityStr);
-            
+
             int idProduct = Integer.parseInt(txtIdProduct.getText());
             String categoryStr = cbCategory.getSelectedItem().toString();
             Category c = CategoryDAO.getCategoryByName(categoryStr);
@@ -864,15 +882,27 @@ public class HomeForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Update Product Successfully");
                 
                 // Update frentend
-                List<Product> listProduct = ProductDAO.getAllProduct();
-                updateProductToTable(listProduct);
+                int indexSelected = tableProduct.getSelectedRow();
+                modelProduct.setValueAt(String.valueOf(product.getIdProduct()), indexSelected, 0);
+                modelProduct.setValueAt(product.getName(), indexSelected, 1);
+                modelProduct.setValueAt(String.valueOf(product.getPrice()), indexSelected, 2);
+                modelProduct.setValueAt(String.valueOf(product.getQuantity()), indexSelected, 3);
+                
+                listProduct.get(indexSelected).setIdProduct(idProduct);
+                listProduct.get(indexSelected).setName(name);
+                listProduct.get(indexSelected).setPrice(price);
+                listProduct.get(indexSelected).setQuantity(quantity);
+                listProduct.get(indexSelected).setCategory(c);
+                
+                updateDetailProduct(listProduct.get(indexSelected));
             } else {
                 JOptionPane.showMessageDialog(null, "Error Server. Not Update Into Database", "Error", JOptionPane.ERROR_MESSAGE);
             }
-            clearText();
+            
             activateInputForm(false);
-            btnExitTask.setEnabled(false);
+            resetFunctionButton();
             activateEditProduct = false;
+            tableProductMouseClicked(null);
         }
     }//GEN-LAST:event_btnEditProductActionPerformed
 
@@ -887,7 +917,7 @@ public class HomeForm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Delete Product Successfully");
 
                 // Update frentend
-                List<Product> listProduct = ProductDAO.getAllProduct();
+                listProduct = ProductDAO.getAllProduct();
                 updateProductToTable(listProduct);
                 
                 clearText();
@@ -901,21 +931,108 @@ public class HomeForm extends javax.swing.JFrame {
 
     // Su kien add item to cart
     private void btnAddToCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToCartActionPerformed
+        int indexSelected = tableProduct.getSelectedRow();
+        
+        Product p = null;
+        if (isSearch){
+            p = listSearchProduct.get(indexSelected);
+        } else {
+            p = listProduct.get(indexSelected);
+        }
+        
+        // get number of item order
         int numberOfOrders = Integer.parseInt(txtNumberOrderItem.getText());
         
-        int idProduct = Integer.parseInt(txtIdProduct.getText());
+        // get remain quantity of product
+        int quantity = p.getQuantity();
         
-        Product p = ProductDAO.getProductById(idProduct);
+        if (numberOfOrders > quantity) {
+            JOptionPane.showMessageDialog(null, "The number of items is large than the remain quantity of product", "Error", JOptionPane.ERROR_MESSAGE);
+            txtNumberOrderItem.requestFocus();
+            return;
+        }
+        
         for (int i = 0; i < numberOfOrders; i++) {
             cart.getListProduct().add(p);
         }
         
+        // Update view
         updateViewCart();
         btnDeleteFromCart.setEnabled(true);
+        btnExportBill.setEnabled(true);
+        btnClearBill.setEnabled(true);
+        
+        int remainQuantity = quantity - numberOfOrders;
+        modelProduct.setValueAt(String.valueOf(remainQuantity), indexSelected, 3);
+        
+        if (isSearch) {
+            listSearchProduct.get(indexSelected).setQuantity(remainQuantity);
+            p = listSearchProduct.get(indexSelected);
+            
+            for (Product pro : listProduct) {
+                if (pro.getIdProduct() == p.getIdProduct()) {
+                    pro.setQuantity(remainQuantity);
+                    break;
+                }
+            }
+            
+            updateDetailProduct(p);
+        }
+        else {
+            listProduct.get(indexSelected).setQuantity(remainQuantity);
+            p = listProduct.get(indexSelected);
+            updateDetailProduct(p);
+        }
     }//GEN-LAST:event_btnAddToCartActionPerformed
-
+    
+    // Delete from cart -> Event click
     private void btnDeleteFromCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteFromCartActionPerformed
-        // TODO add your handling code here:
+        int indexSelected = tableProduct.getSelectedRow();
+        Product p = null;
+        if (isSearch) {
+            p = listSearchProduct.get(indexSelected);
+        } else {
+            p = listProduct.get(indexSelected);
+        }
+        
+        // find quantity of item ordered
+        int count = 0;
+        for (int i = 0; i < cart.getListProduct().size(); i++) {
+            if (p.getIdProduct() == cart.getListProduct().get(i).getIdProduct()) {
+                cart.getListProduct().remove(i);
+                count += 1;
+                i -= 1;
+            }
+        }
+        
+        updateViewCart();
+        
+        // Update quantity in product table
+        int lastQuantity = Integer.parseInt(txtQuantity.getText());
+        int currentQuantity = lastQuantity + count;
+        modelProduct.setValueAt(String.valueOf(currentQuantity), indexSelected, 3);
+        if (isSearch) {
+            listSearchProduct.get(indexSelected).setQuantity(currentQuantity);
+            updateDetailProduct(listSearchProduct.get(indexSelected));
+            
+            for (Product pro : listProduct) {
+                if (p.getIdProduct() == pro.getIdProduct()) {
+                    pro.setQuantity(currentQuantity);
+                    break;
+                }
+            }
+        } else {
+            listProduct.get(indexSelected).setQuantity(currentQuantity);
+            updateDetailProduct(listProduct.get(indexSelected));
+        }
+        
+        // Reset UI
+        btnDeleteFromCart.setEnabled(false);
+        
+        if (cart.getListCartDetail().size() == 0) {
+            btnExportBill.setEnabled(false);
+            btnClearBill.setEnabled(false);
+        }
     }//GEN-LAST:event_btnDeleteFromCartActionPerformed
 
     private void btnCustomerFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerFormActionPerformed
@@ -924,8 +1041,9 @@ public class HomeForm extends javax.swing.JFrame {
         cf.setVisible(true);
     }//GEN-LAST:event_btnCustomerFormActionPerformed
 
+    // Su kien click vao button Category
     private void btnCategoryFormActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCategoryFormActionPerformed
-        CategoryForm cf = new CategoryForm();
+        CategoryForm cf = new CategoryForm(this);
         cf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         cf.setVisible(true);
     }//GEN-LAST:event_btnCategoryFormActionPerformed
@@ -943,10 +1061,15 @@ public class HomeForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDiscountFormActionPerformed
 
     private void tableProductMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseClicked
-        int index = tableProduct.getSelectedRow();
+        int indexSelected = tableProduct.getSelectedRow();
         
-        int idProduct = Integer.parseInt(modelProduct.getValueAt(index, 0).toString());  
-        Product p = ProductDAO.getProductById(idProduct);
+        Product p = null;
+        if (isSearch) {
+            p = listSearchProduct.get(indexSelected);
+        } else {
+            p = listProduct.get(indexSelected);
+        }
+        
         Category c = p.getCategory();
         
         for (int i = 0; i < listCategory.size(); i++) {
@@ -982,6 +1105,10 @@ public class HomeForm extends javax.swing.JFrame {
             }
         }
         
+        if (cart.checkProductInCart(p)) {
+            btnDeleteFromCart.setEnabled(true);
+        }
+        
     }//GEN-LAST:event_tableProductMouseClicked
 
     // Su kien click vao button Exit Task
@@ -1004,6 +1131,74 @@ public class HomeForm extends javax.swing.JFrame {
         ebf.setVisible(true);
     }//GEN-LAST:event_btnExportBillActionPerformed
 
+    // Event clear bill
+    private void btnClearBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearBillActionPerformed
+                // Update product table & product detail
+        int indexSelected = tableProduct.getSelectedRow();
+        
+        List<CartDetail> listCartDetail = cart.getListCartDetail();
+        List<Integer> listIndexMonify = new ArrayList<>();
+        for (CartDetail cd : listCartDetail) {
+            for (int i = 0; i < listProduct.size(); i++) {
+                Product p = listProduct.get(i);
+                if (cd.getProduct().getIdProduct() == p.getIdProduct()) {
+                    p.setQuantity(p.getQuantity() + cd.getQuantity());
+                    listIndexMonify.add(i);
+                    break;
+                }
+            }
+        }
+        
+        if (isSearch) {
+            listIndexMonify = new ArrayList<>();
+            for (CartDetail cd : listCartDetail) {
+                for (int i = 0; i < listSearchProduct.size(); i++) {
+                    Product pSearch = listSearchProduct.get(i);
+                    if (pSearch.getIdProduct() == cd.getProduct().getIdProduct()) {
+                        listIndexMonify.add(i);
+                    }
+                }
+            }
+            
+            for (Integer index : listIndexMonify) {
+                modelProduct.setValueAt(String.valueOf(listSearchProduct.get(index).getQuantity()), index, 3);
+            }
+            
+            if (indexSelected != -1) {
+                Product p = listSearchProduct.get(indexSelected);
+                updateDetailProduct(p);
+            }
+        } else {
+            for (Integer index : listIndexMonify) {
+                modelProduct.setValueAt(String.valueOf(listProduct.get(index).getQuantity()), index, 3);
+            }
+            
+            if (indexSelected != -1) {
+                Product p = listProduct.get(indexSelected);
+                updateDetailProduct(p);
+            }
+        }
+        
+        cart.getListProduct().clear();
+        
+        btnDeleteProduct.setEnabled(false);
+        btnExportBill.setEnabled(false);
+        btnClearBill.setEnabled(false);
+        
+        updateViewCart();
+    }//GEN-LAST:event_btnClearBillActionPerformed
+    
+    public boolean getIsSearch() {
+        return isSearch;
+    }
+    
+    public DefaultTableModel getModelProduct() {
+        return modelProduct;
+    }
+    
+    public List<Product> getListProduct() {
+        return listProduct;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddNewProduct;

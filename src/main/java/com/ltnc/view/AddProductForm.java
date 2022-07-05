@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
+
 package com.ltnc.view;
 
 import com.ltnc.dao.CategoryDAO;
@@ -23,10 +20,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author nguyennam
- */
 public final class AddProductForm extends javax.swing.JFrame {
 
     String urlDefault = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
@@ -249,16 +242,18 @@ public final class AddProductForm extends javax.swing.JFrame {
         Category c = CategoryDAO.getCategoryByName(categoryStr);
         
         Product product = new Product(name, price, urlImage, c, quantity);
-        int row = ProductDAO.addNewProduct(product);
-        if (row != 0) {
+        int idKey = ProductDAO.insertProductReturnKey(product);
+        if (idKey > 0) {
             JOptionPane.showMessageDialog(null, "Add New Product Successfully");
-
+            
             // Update parent view
-            List<Product> listProduct = ProductDAO.getAllProduct();
-            homeForm.updateProductToTable(listProduct);
-            homeForm.activateInputForm(false);
-            homeForm.clearText();
-            homeForm.resetFunctionButton();
+            Product newProduct = ProductDAO.getProductById(idKey);
+            homeForm.getListProduct().add(newProduct);
+            if (!homeForm.getIsSearch()) {
+                homeForm.getModelProduct().addRow(new Object[] {
+                    newProduct.getIdProduct(), newProduct.getName(), newProduct.getPrice(), newProduct.getQuantity()
+                });
+            }
             
         } else {
             JOptionPane.showMessageDialog(null, "Error Server. Not Insert Into Database", "Error", JOptionPane.ERROR_MESSAGE);

@@ -83,4 +83,32 @@ public class ProductDAO {
     public static int deleteProductById(int id) {
         return UtilDAO.queryUpdate(QUERY_DELETE_PRODUCT_BY_ID, (Integer) id);
     }
+    
+    public static int insertProductReturnKey(Product p) {
+        int key = -1;
+        try {
+            Connection conn = ConnectData.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(QUERY_ADD_NEW_PRODUCT, Statement.RETURN_GENERATED_KEYS);
+            
+            pstm.setString(1, p.getName());
+            pstm.setDouble(2, p.getPrice());
+            pstm.setString(3, p.getUrlImage());
+            pstm.setInt(4, p.getCategory().getIdCategory());
+            pstm.setInt(5, p.getQuantity());
+            
+            pstm.executeUpdate();
+            ResultSet generatedKeys = pstm.getGeneratedKeys();
+            
+            if (generatedKeys.next()) {
+                key = generatedKeys.getInt(1);
+            }
+            
+            conn.close();
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return key;
+    }
+    
 }

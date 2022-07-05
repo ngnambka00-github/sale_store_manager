@@ -90,12 +90,13 @@ public class UtilDAO {
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                int idCustomer = rs.getInt(1);
-                String name = rs.getString(2);
-                String phoneNumber = rs.getString(3);
-                String email = rs.getString(4);
+                int idCustomer = rs.getInt("id_customer");
+                String name = rs.getString("name");
+                String phoneNumber = rs.getString("phone_number");
+                String email = rs.getString("email");
+                int accumulatedPoint = rs.getInt("accumulated_point");
                 
-                Customer c = new Customer(idCustomer, name, phoneNumber, email);
+                Customer c = new Customer(idCustomer, name, phoneNumber, email, accumulatedPoint);
                 listCustomer.add(c);
             }
             // close connection

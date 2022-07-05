@@ -7,22 +7,25 @@ public class Customer {
     private String name;
     private String phoneNumber;
     private String email;
+    private int accumulatedPoint;
 
     public Customer() {
     }
 
-    public Customer(String name, String phoneNumber, String email) {
+    public Customer(String name, String phoneNumber, String email, int accumulatedPoint) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.accumulatedPoint = accumulatedPoint;
     }
     
     
-    public Customer(Integer idCustomer, String name, String phoneNumber, String email) {
+    public Customer(Integer idCustomer, String name, String phoneNumber, String email, int accumulatedPoint) {
         this.idCustomer = idCustomer;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.accumulatedPoint = accumulatedPoint;
     }
 
     public Integer getIdCustomer() {
@@ -56,6 +59,16 @@ public class Customer {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public int getAccumulatedPoint() {
+        return accumulatedPoint;
+    }
+
+    public void setAccumulatedPoint(int accumulatedPoint) {
+        this.accumulatedPoint = accumulatedPoint;
+    }
+    
+    
 
     @Override
     public String toString() {

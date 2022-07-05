@@ -17,9 +17,12 @@ public class CustomerDAO {
     private static String QUERY_CUSTOMER_BY_ID = "SELECT * FROM customer WHERE id_customer=?";
     private static String QUERY_SEARCH_BY_NAME = "SELECT * FROM customer WHERE name LIKE ?";
     private static String QUERY_SEARCH_BY_PHONE_NUMBER = "SELECT * FROM customer WHERE phone_number LIKE ?";
-    private static String QUERY_ADD_NEW_CUSTOMER = "INSERT INTO customer (name, phone_number, email) VALUES (?, ?, ?)";
+    
+    private static String QUERY_ADD_NEW_CUSTOMER = "INSERT INTO customer (name, phone_number, email, accumulated_point) VALUES (?, ?, ?, ?)";
     private static String QUERY_UPDATE_CUSTOMER = "UPDATE customer SET name=?, phone_number=?, email=? WHERE id_customer=?";
     private static String QUERY_DELETE_CUSTOMER_BY_ID = "DELETE FROM customer WHERE id_customer=?";
+    
+    private static String QUERY_UPDATE_ACC_POINT = "UPDATE customer SET accumulated_point=? WHERE id_customer=?";
     
     public static List<Customer> getAllCustomer() {
         return UtilDAO.getCustomers(CustomerDAO.QUERY_ALL_CUSTOMER);
@@ -40,8 +43,9 @@ public class CustomerDAO {
                 String name = rs.getString("name");
                 String phoneNumber = rs.getString("phone_number");
                 String email = rs.getString("email");
+                int accumulatedPoint = rs.getInt("accumulated_point");
                 
-                c = new Customer(idCustomer, name, phoneNumber, email);
+                c = new Customer(idCustomer, name, phoneNumber, email, accumulatedPoint);
             }
             
         } catch (Exception ex) {
@@ -68,7 +72,8 @@ public class CustomerDAO {
         return UtilDAO.queryUpdate(CustomerDAO.QUERY_ADD_NEW_CUSTOMER, 
                 customer.getName(), 
                 customer.getPhoneNumber(), 
-                customer.getEmail());
+                customer.getEmail(), 
+                customer.getAccumulatedPoint());
     }
     
     public static int updateCustomer(Customer customer) {
@@ -81,5 +86,9 @@ public class CustomerDAO {
     
     public static int deleteCustomer(int id) {
         return UtilDAO.queryUpdate(CustomerDAO.QUERY_DELETE_CUSTOMER_BY_ID, id);
+    }
+    
+    public static int updateAccumulatedPoint(Customer customer) {
+        return UtilDAO.queryUpdate(QUERY_UPDATE_ACC_POINT, customer.getAccumulatedPoint(), customer.getIdCustomer());
     }
 }
