@@ -18,6 +18,8 @@ public class ProductDAO {
     private static String GET_PRODUCT_BY_ID = "SELECT * FROM product WHERE id_product=?";
     private static String GET_PRODUCTS_BY_NAME = "SELECT * FROM product WHERE name LIKE ?";
     private static String QUERY_UPDATE_PRODUCT = "UPDATE product SET name=?, price=?, url_image=?, id_category=?, quantity=? WHERE id_product=?";
+    private static String QUERY_ADD_NEW_PRODUCT = "INSERT INTO product (name, price, url_image, id_category, quantity) VALUES (?, ?, ?, ?, ?)";
+    private static String QUERY_DELETE_PRODUCT_BY_ID = "DELETE FROM product WHERE id_product=?";
     
     public static List<Product> getAllProduct() {
         return UtilDAO.getProducts(ProductDAO.GET_ALL_PRODUCT);
@@ -66,5 +68,19 @@ public class ProductDAO {
                 p.getCategory().getIdCategory(), 
                 p.getQuantity(), 
                 p.getIdProduct());
+    }
+
+    public static int addNewProduct(Product p) {
+        return UtilDAO.queryUpdate(
+                QUERY_ADD_NEW_PRODUCT, 
+                p.getName(),
+                p.getPrice(), 
+                p.getUrlImage(), 
+                p.getCategory().getIdCategory(), 
+                p.getQuantity());
+    }
+
+    public static int deleteProductById(int id) {
+        return UtilDAO.queryUpdate(QUERY_DELETE_PRODUCT_BY_ID, (Integer) id);
     }
 }

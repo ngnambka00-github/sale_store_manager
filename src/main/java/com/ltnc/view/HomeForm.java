@@ -4,6 +4,8 @@ package com.ltnc.view;
 import com.ltnc.dao.CategoryDAO;
 import com.ltnc.dao.ProductDAO;
 import com.ltnc.dao.UtilDAO;
+import com.ltnc.entity.Cart;
+import com.ltnc.entity.CartDetail;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Product;
 import java.awt.Font;
@@ -28,13 +30,16 @@ import javax.swing.table.TableColumnModel;
 
 public class HomeForm extends javax.swing.JFrame {
 
-    DefaultTableModel modelProduct = null;
-    DefaultComboBoxModel modelCategory = null;
-    String urlDefault = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
-    String urlImage = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
-    boolean activateEditProduct = false;
+    private DefaultTableModel modelProduct = null;
+    private DefaultTableModel modelCart = null;
+    private DefaultComboBoxModel modelCategory = null;
     
-    List<Category> listCategory = null;
+    private String urlDefault = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
+    private String urlImage = "/home/nguyennam/Documents/JavaProject/image/product/default.png";
+    private boolean activateEditProduct = false;
+    private List<Category> listCategory = null;
+    
+    private Cart cart = null;
     
     public HomeForm() {
         initComponents();
@@ -59,12 +64,15 @@ public class HomeForm extends javax.swing.JFrame {
         tableOrderList.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         
         modelProduct = (DefaultTableModel) tableProduct.getModel();
+        modelCart = (DefaultTableModel) tableOrderList.getModel();
         modelCategory = (DefaultComboBoxModel) cbCategory.getModel();
         
         
         List<Product> listProduct = ProductDAO.getAllProduct();
         updateProductToTable(listProduct);
         uploadCategoryCombobox();
+        
+        cart = new Cart();
     }
     
     // Clear form text
@@ -106,8 +114,7 @@ public class HomeForm extends javax.swing.JFrame {
         }
         
         if (!listProduct.isEmpty()) {
-            for (int i = 0; i < listProduct.size(); i++) {
-                Product p = listProduct.get(i);
+            for (Product p : listProduct) {
                 modelProduct.addRow(new Object[] {
                     p.getIdProduct(), p.getName(), p.getPrice(), p.getQuantity()
                 });
@@ -163,6 +170,19 @@ public class HomeForm extends javax.swing.JFrame {
         }
     }
     
+    public void resetFunctionButton() {
+        btnAddNewProduct.setEnabled(true);
+        btnDeleteProduct.setEnabled(false);
+        btnEditProduct.setEnabled(false);
+        btnExitTask.setEnabled(false);
+        activateEditProduct = false;
+        
+        btnAddToCart.setEnabled(false);
+        btnDeleteFromCart.setEnabled(false);
+        txtNumberOrderItem.setText("");
+        txtNumberOrderItem.setEditable(false);
+    }
+    
     public MouseAdapter imageMouseAdapter = new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -183,6 +203,35 @@ public class HomeForm extends javax.swing.JFrame {
                 
             };
     
+    /* ========================================================== */
+    /*                        CART                                */
+    /* ========================================================== */
+    
+    public void updateViewCart() {
+        while (modelCart.getRowCount() != 0) {
+            modelCart.removeRow(0);
+        }
+        
+        List<CartDetail> listCartDetail = cart.getListCartDetail();
+        double billPay = 0;
+        int totalItem = 0;
+        
+        if (!listCartDetail.isEmpty()) {
+            for (CartDetail cd : listCartDetail) {
+                billPay += cd.getTotalCartDetail();
+                totalItem += cd.getQuantity();
+                
+                modelCart.addRow(new Object[] {
+                    cd.getProduct().getIdProduct(), cd.getProduct().getName(), cd.getQuantity(), cd.getTotalCartDetail()
+                });
+            }
+        }
+        
+        txtTotalItem.setText(String.valueOf(totalItem));
+        txtTotalBill.setText(String.valueOf(billPay));
+    }
+    
+    /* ========================================================== */
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -218,9 +267,11 @@ public class HomeForm extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         tableOrderList = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtTotalBill = new javax.swing.JTextField();
         btnExportBill = new javax.swing.JButton();
         btnClearBill = new javax.swing.JButton();
+        txtTotalItem = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         btnCustomerForm = new javax.swing.JButton();
         btnCategoryForm = new javax.swing.JButton();
@@ -393,6 +444,7 @@ public class HomeForm extends javax.swing.JFrame {
 
     btnAddToCart.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnAddToCart.setText("Add To Cart");
+    btnAddToCart.setEnabled(false);
     btnAddToCart.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             btnAddToCartActionPerformed(evt);
@@ -402,12 +454,14 @@ public class HomeForm extends javax.swing.JFrame {
     btnDeleteFromCart.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnDeleteFromCart.setText("Delete From Cart");
     btnDeleteFromCart.setActionCommand("");
+    btnDeleteFromCart.setEnabled(false);
     btnDeleteFromCart.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             btnDeleteFromCartActionPerformed(evt);
         }
     });
 
+    txtNumberOrderItem.setEditable(false);
     txtNumberOrderItem.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
     btnExitTask.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
@@ -530,10 +584,7 @@ public class HomeForm extends javax.swing.JFrame {
     tableOrderList.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     tableOrderList.setModel(new javax.swing.table.DefaultTableModel(
         new Object [][] {
-            {null, null, null, null},
-            {null, null, null, null},
-            {null, null, null, null},
-            {null, null, null, null}
+
         },
         new String [] {
             "ID", "Name", "Quantity", "Prices"
@@ -553,14 +604,27 @@ public class HomeForm extends javax.swing.JFrame {
     jLabel8.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     jLabel8.setText("Total Bill");
 
-    jTextField2.setEditable(false);
-    jTextField2.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    txtTotalBill.setEditable(false);
+    txtTotalBill.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
     btnExportBill.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnExportBill.setText("Export Bill");
+    btnExportBill.setEnabled(false);
+    btnExportBill.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnExportBillActionPerformed(evt);
+        }
+    });
 
     btnClearBill.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnClearBill.setText("Clear Bill");
+    btnClearBill.setEnabled(false);
+
+    txtTotalItem.setEditable(false);
+    txtTotalItem.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+
+    jLabel9.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    jLabel9.setText("Total Item");
 
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
@@ -570,31 +634,41 @@ public class HomeForm extends javax.swing.JFrame {
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
-                    .addGap(54, 54, 54)
-                    .addComponent(jLabel8)
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(btnClearBill, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnExportBill, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap())))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txtTotalBill, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnExportBill, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtTotalItem, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnClearBill, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addGap(56, 56, 56)
+                            .addComponent(jLabel8)
+                            .addGap(0, 0, Short.MAX_VALUE)))
+                    .addContainerGap())
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(49, 49, 49)
+                    .addComponent(jLabel9)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
     );
     jPanel3Layout.setVerticalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         .addGroup(jPanel3Layout.createSequentialGroup()
-            .addContainerGap()
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel9)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(txtTotalItem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel8)
             .addGap(3, 3, 3)
-            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(20, 20, 20)
+            .addComponent(txtTotalBill, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(btnExportBill)
-            .addGap(20, 20, 20)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(btnClearBill)
-            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(13, 13, 13))
     );
 
     jPanel4.setBackground(new java.awt.Color(255, 204, 204));
@@ -709,10 +783,7 @@ public class HomeForm extends javax.swing.JFrame {
         
         // Reset UI
         clearText();
-        btnAddNewProduct.setEnabled(true);
-        btnEditProduct.setEnabled(false);
-        btnExitTask.setEnabled(false);
-        btnDeleteProduct.setEnabled(false);
+        resetFunctionButton();
         activateInputForm(false);
     }//GEN-LAST:event_btnSearchActionPerformed
 
@@ -734,7 +805,7 @@ public class HomeForm extends javax.swing.JFrame {
 
     // Button add new Product
     private void btnAddNewProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddNewProductActionPerformed
-        ProductForm pf = new ProductForm(this);
+        AddProductForm pf = new AddProductForm(this);
         pf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         pf.setVisible(true);
         
@@ -805,12 +876,42 @@ public class HomeForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEditProductActionPerformed
 
+    // Event button to delete product
     private void btnDeleteProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteProductActionPerformed
-        // TODO add your handling code here:
+        int idProduct = Integer.parseInt(txtIdProduct.getText());
+        int result = JOptionPane.showConfirmDialog(this, "Sure? You want to delete this product?", "Question", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        
+        if(result == JOptionPane.YES_OPTION){
+            int row = ProductDAO.deleteProductById(idProduct);
+            if (row != 0) {
+                JOptionPane.showMessageDialog(null, "Delete Product Successfully");
+
+                // Update frentend
+                List<Product> listProduct = ProductDAO.getAllProduct();
+                updateProductToTable(listProduct);
+                
+                clearText();
+                activateInputForm(false);
+                resetFunctionButton();
+            } else {
+                JOptionPane.showMessageDialog(null, "Error Server. Not Delete Product", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_btnDeleteProductActionPerformed
 
+    // Su kien add item to cart
     private void btnAddToCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddToCartActionPerformed
-        // TODO add your handling code here:
+        int numberOfOrders = Integer.parseInt(txtNumberOrderItem.getText());
+        
+        int idProduct = Integer.parseInt(txtIdProduct.getText());
+        
+        Product p = ProductDAO.getProductById(idProduct);
+        for (int i = 0; i < numberOfOrders; i++) {
+            cart.getListProduct().add(p);
+        }
+        
+        updateViewCart();
+        btnDeleteFromCart.setEnabled(true);
     }//GEN-LAST:event_btnAddToCartActionPerformed
 
     private void btnDeleteFromCartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteFromCartActionPerformed
@@ -862,16 +963,31 @@ public class HomeForm extends javax.swing.JFrame {
         btnDeleteProduct.setEnabled(true);
         btnAddNewProduct.setEnabled(true);
         btnExitTask.setEnabled(false);
+        
+        if (p.getQuantity() == 0) {
+            txtNumberOrderItem.setText("HET HANG");
+            txtNumberOrderItem.setEditable(false);
+            btnAddToCart.setEnabled(false);
+            btnDeleteFromCart.setEnabled(false);
+        } else {
+            txtNumberOrderItem.setEditable(true);
+            txtNumberOrderItem.setText(String.valueOf(1));
+            
+            btnAddToCart.setEnabled(true);
+            
+            if (cart.checkProductInCart(p)) {
+                btnDeleteProduct.setEnabled(true);
+            } else {
+                btnDeleteFromCart.setEnabled(false);
+            }
+        }
+        
     }//GEN-LAST:event_tableProductMouseClicked
 
     // Su kien click vao button Exit Task
     private void btnExitTaskActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitTaskActionPerformed
         // set UI
-        btnExitTask.setEnabled(false);
-        btnAddNewProduct.setEnabled(true);
-        btnDeleteProduct.setEnabled(false);
-        btnEditProduct.setEnabled(false);
-        activateEditProduct = false;
+        resetFunctionButton();
         
         activateInputForm(false);
         
@@ -881,6 +997,12 @@ public class HomeForm extends javax.swing.JFrame {
     private void tableProductMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductMouseEntered
         // TODO add your handling code here:
     }//GEN-LAST:event_tableProductMouseEntered
+
+    private void btnExportBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportBillActionPerformed
+        ExportBillForm ebf = new ExportBillForm();
+        ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        ebf.setVisible(true);
+    }//GEN-LAST:event_btnExportBillActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -906,13 +1028,13 @@ public class HomeForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextField jTextField2;
     private javax.swing.JLabel lblImage;
     private javax.swing.JTable tableOrderList;
     private javax.swing.JTable tableProduct;
@@ -922,5 +1044,7 @@ public class HomeForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtProductName;
     private javax.swing.JTextField txtQuantity;
     private javax.swing.JTextField txtSearch;
+    private javax.swing.JTextField txtTotalBill;
+    private javax.swing.JTextField txtTotalItem;
     // End of variables declaration//GEN-END:variables
 }

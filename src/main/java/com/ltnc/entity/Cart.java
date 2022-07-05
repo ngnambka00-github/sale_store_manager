@@ -13,6 +13,8 @@ public class Cart {
 
     public Cart() {
         listProduct = new ArrayList<>();
+        dateCreated = new Date(12344);
+        
     }
 
     public Cart(int idCart, Customer customer, Date dateCreated, List<Product> listProduct) {
@@ -59,4 +61,44 @@ public class Cart {
         return "Cart{" + "idCart=" + idCart + ", customer=" + customer + ", dateCreated=" + dateCreated + ", listProduct=" + listProduct + '}';
     }
     
+    public boolean checkProductInCart(Product product) {
+        if (listProduct.isEmpty()) {
+            return false;
+        }
+        
+        for (Product p : listProduct) {
+            if (p.getIdProduct() == product.getIdProduct()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public List<CartDetail> getListCartDetail() {
+        List<CartDetail> listCartDetail = new ArrayList<>();
+        
+        int sizeOfProduct = listProduct.size();
+        boolean[] listCheck = new boolean[sizeOfProduct];
+        
+        for (int i = 0; i < sizeOfProduct; i++) {
+            if (!listCheck[i]) {
+                listCheck[i] = true;
+                int count = 1;
+                CartDetail cd = new CartDetail();
+                cd.setProduct(listProduct.get(i));
+                
+                for (int j = i + 1; j < sizeOfProduct; j++) {
+                    if (listProduct.get(i).getIdProduct() == listProduct.get(j).getIdProduct()) {
+                        listCheck[j] = true;
+                        count += 1;
+                    }
+                }
+                cd.setQuantity(count);
+                
+                listCartDetail.add(cd);
+            }
+        }
+        
+        return listCartDetail;
+    }
 }

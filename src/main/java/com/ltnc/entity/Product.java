@@ -20,6 +20,15 @@ public class Product {
         this.category = category;
         this.quantity = quantity;
     }
+
+    public Product(String name, double price, String urlImage, Category category, int quantity) {
+        this.name = name;
+        this.price = price;
+        this.urlImage = urlImage;
+        this.category = category;
+        this.quantity = quantity;
+    }
+    
     
     public Product(Product p) {
         this(p.getIdProduct(), p.getName(), p.getPrice(), p.getUrlImage(), p.getCategory(), p.getQuantity());

@@ -3,6 +3,7 @@ package com.ltnc;
 
 import com.ltnc.view.HomeForm;
 import com.ltnc.connection.ConnectData;
+import com.ltnc.view.AddProductForm;
 import com.ltnc.view.CustomerForm;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,6 +18,7 @@ public class Assignment_ltnc {
             public void run() {
                 new HomeForm().setVisible(true);
 //                new CustomerForm().setVisible(true);
+//                new AddProductForm().setVisible(true);
             }
         });
     }
