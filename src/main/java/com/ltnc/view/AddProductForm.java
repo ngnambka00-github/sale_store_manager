@@ -38,6 +38,7 @@ public final class AddProductForm extends javax.swing.JFrame {
         initComponents();
         this.setTitle("Add Product Form");
         this.homeForm = homeForm;
+        this.setResizable(false);
         
         loadImageToView(urlDefault);
         modelCategory = (DefaultComboBoxModel) cbCategory.getModel();

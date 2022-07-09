@@ -4,6 +4,7 @@ package com.ltnc.dao;
 import com.ltnc.connection.ConnectData;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Customer;
+import com.ltnc.entity.Discount;
 import com.ltnc.entity.Product;
 import java.sql.Connection;
 import java.sql.Date;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 
 
 public class UtilDAO {
+    
     private static PreparedStatement fillQuery(Connection conn, String query, boolean returnKey, Object ... parameters) { 
         PreparedStatement preparedStatement = null;
         try {
@@ -224,5 +226,36 @@ public class UtilDAO {
         }
         
         return listProduct;
+    }
+
+    public static List<Discount> getDiscounts(String query, Object ... parameters) {
+        List<Discount> listDiscount = new ArrayList<>();
+        
+        try {
+            // create connect to database
+            Connection conn = ConnectData.getConnection();
+
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int idDiscount = rs.getInt("id_discount");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                double percentDiscount = rs.getDouble("percent_discount");
+                Date start = rs.getDate("start");
+                Date end = rs.getDate("end");
+                
+                Discount discount = new Discount(name, description, percentDiscount, start, end);
+                listDiscount.add(discount);
+            }
+            // close connection
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return listDiscount;
     }
 }

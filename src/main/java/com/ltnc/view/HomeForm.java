@@ -56,6 +56,7 @@ public class HomeForm extends javax.swing.JFrame {
     public HomeForm() {
         initComponents();
         this.setTitle("Home Form");
+        this.setResizable(false);
         
         TableColumnModel columnProductModel = tableProduct.getColumnModel();
         columnProductModel.getColumn(0).setPreferredWidth(10);
@@ -1162,7 +1163,7 @@ public class HomeForm extends javax.swing.JFrame {
         if (!activeExportBillForm) {
             activeExportBillForm = true;
             
-            ExportBillForm ebf = new ExportBillForm();
+            ExportBillForm ebf = new ExportBillForm(this);
             ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             ebf.setVisible(true);
         }

@@ -9,6 +9,7 @@ public class Cart {
     private int idCart;
     private Customer customer;
     private Date dateCreated;
+    private Discount discount;
     private List<Product> listProduct;
 
     public Cart() {
@@ -17,13 +18,22 @@ public class Cart {
         
     }
 
-    public Cart(int idCart, Customer customer, Date dateCreated, List<Product> listProduct) {
+    public Cart(int idCart, Customer customer, Date dateCreated, Discount discount, List<Product> listProduct) {
         this.idCart = idCart;
         this.customer = customer;
         this.dateCreated = dateCreated;
+        this.discount = discount;
         this.listProduct = listProduct;
     }
 
+    public Cart(Customer customer, Date dateCreated, Discount discount, List<Product> listProduct) {
+        this.customer = customer;
+        this.dateCreated = dateCreated;
+        this.discount = discount;
+        this.listProduct = listProduct;
+    }
+
+    
     public int getIdCart() {
         return idCart;
     }
@@ -58,8 +68,9 @@ public class Cart {
 
     @Override
     public String toString() {
-        return "Cart{" + "idCart=" + idCart + ", customer=" + customer + ", dateCreated=" + dateCreated + ", listProduct=" + listProduct + '}';
+        return "Cart{" + "idCart=" + idCart + ", customer=" + customer + ", dateCreated=" + dateCreated + ", discount=" + discount + ", listProduct=" + listProduct + '}';
     }
+
     
     public boolean checkProductInCart(Product product) {
         if (listProduct.isEmpty()) {
