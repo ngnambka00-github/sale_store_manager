@@ -58,6 +58,7 @@ public class HomeForm extends javax.swing.JFrame {
         initComponents();
         this.setTitle("Home Form");
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         
         TableColumnModel columnProductModel = tableProduct.getColumnModel();
         columnProductModel.getColumn(0).setPreferredWidth(10);

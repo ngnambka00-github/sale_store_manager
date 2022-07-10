@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 
 public class ExportBillForm extends javax.swing.JFrame {
@@ -19,6 +20,10 @@ public class ExportBillForm extends javax.swing.JFrame {
     private HomeForm homeForm = null;
     private Cart cart;
     private double totalBill = 0;
+    
+    private int numAccPoint = 0;
+    private double discountPrice = 0;
+    
     private boolean activeChooseCustomerForm = false;
     private boolean activeChooseDiscountForm = false;
     
@@ -34,6 +39,8 @@ public class ExportBillForm extends javax.swing.JFrame {
         this.cart = cart;
         this.setTitle("Export Bill Form");
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
+        
         txtBillCode.setText(uuid);
         
         this.addWindowListener(new WindowAdapter() {
@@ -45,6 +52,11 @@ public class ExportBillForm extends javax.swing.JFrame {
         
         // Thiet lap giao dien co ban
         tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
+        TableColumnModel columnProductModel = tableProduct.getColumnModel();
+        columnProductModel.getColumn(0).setPreferredWidth(20);
+        columnProductModel.getColumn(1).setPreferredWidth(200);
+        columnProductModel.getColumn(2).setPreferredWidth(60);
+        columnProductModel.getColumn(3).setPreferredWidth(80);
         modelProduct = (DefaultTableModel) tableProduct.getModel();
         
         List<CartDetail> listCartDetail = cart.getListCartDetail();
@@ -255,6 +267,11 @@ public class ExportBillForm extends javax.swing.JFrame {
     btnApplyAccPoint.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     btnApplyAccPoint.setText("Apply Acc Point");
     btnApplyAccPoint.setEnabled(false);
+    btnApplyAccPoint.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnApplyAccPointActionPerformed(evt);
+        }
+    });
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -456,7 +473,6 @@ public class ExportBillForm extends javax.swing.JFrame {
             txtDiscountName.setText("");
             txtDiscountPercentage.setText("");
             
-            double discountPrice = cart.getTotalPriceApplyDiscount();
             cart.setDiscount(null);
             totalBill += discountPrice;
             lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
@@ -469,23 +485,22 @@ public class ExportBillForm extends javax.swing.JFrame {
             return;
         }
         
-        int numberChoice = 0;
-        if (chkAccPoint.isSelected()) {
-            String numberChoiceStr = txtChooceAccPoint.getText();
-            if (numberChoiceStr.length() == 0) {
-                JOptionPane.showMessageDialog(null, "Fill Number of Accumulated Point is required", "Error", JOptionPane.ERROR_MESSAGE);    
-                txtChooceAccPoint.requestFocus();
-                return;
-            }
-            
-            try {
-                numberChoice = Integer.parseInt(numberChoiceStr);
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(null, "Number of Accumulated Point Choose must be less than Total Accumulated Point", "Error", JOptionPane.ERROR_MESSAGE);
-                txtChooceAccPoint.requestFocus();
-                return;
-            }
+        if (chkDiscount.isSelected() && cart.getDiscount() == null) {
+            JOptionPane.showMessageDialog(null, "Please choice Discount Or uncheck \"Discount\"", "Error", JOptionPane.ERROR_MESSAGE);    
+            return;
         }
+        
+        if (chkAccPoint.isSelected() && numAccPoint == 0) {
+            JOptionPane.showMessageDialog(null, "Please fill Number of Accumulated Point Or uncheck \"Accumulated Point\"", "Error", JOptionPane.ERROR_MESSAGE);    
+            txtChooceAccPoint.requestFocus();
+            return;
+        }
+        
+        // Xuat ra file .txt
+        
+        // update thong tin database 
+        
+        // update lai giao dien lop cha
     }//GEN-LAST:event_btnExportBillActionPerformed
 
     private void chkAccPointActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAccPointActionPerformed
@@ -494,11 +509,49 @@ public class ExportBillForm extends javax.swing.JFrame {
         if (status) {
             txtChooceAccPoint.setEditable(true);
             btnApplyAccPoint.setEnabled(true);
+            txtChooceAccPoint.requestFocus();
         } else {
+            txtChooceAccPoint.setText("");
             txtChooceAccPoint.setEditable(false);
             btnApplyAccPoint.setEnabled(false);
+            
+            txtAccPointMinus.setText("");
+            totalBill += numAccPoint * 1000.0;
+            numAccPoint = 0;
+            lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
         }
     }//GEN-LAST:event_chkAccPointActionPerformed
+
+    private void btnApplyAccPointActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyAccPointActionPerformed
+        String numberChoiceStr = txtChooceAccPoint.getText();
+        if (numberChoiceStr.length() == 0) {
+            JOptionPane.showMessageDialog(null, "Fill Number of Accumulated Point is required", "Error", JOptionPane.ERROR_MESSAGE);    
+            txtChooceAccPoint.requestFocus();
+            return;
+        }
+        
+        int numberChoice = 0;
+        int totalAccPoint = Integer.parseInt(txtAccPointTotal.getText());
+        
+        try {
+            numberChoice = Integer.parseInt(numberChoiceStr);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Number of Accumulated Point Choose must be an Integer", "Error", JOptionPane.ERROR_MESSAGE);
+            txtChooceAccPoint.requestFocus();
+            return;
+        }
+        
+        if (numberChoice > totalAccPoint) {
+            JOptionPane.showMessageDialog(null, "Number of Accumulated Point Choose must be less than Total Accumulated Point", "Error", JOptionPane.ERROR_MESSAGE);
+            txtChooceAccPoint.requestFocus();
+            return;
+        }
+        
+        numAccPoint = numberChoice;
+        totalBill -= numberChoice * 1000.0;
+        txtAccPointMinus.setText(String.valueOf(numberChoice * 1000.0));
+        lblTotalBill.setText("Total Bill: " + totalBill);
+    }//GEN-LAST:event_btnApplyAccPointActionPerformed
 
 
     public void setActiveChooseCustomerForm(boolean activeChooseCustomerForm) {
@@ -517,7 +570,7 @@ public class ExportBillForm extends javax.swing.JFrame {
             txtDiscountName.setText(d.getName());
             txtDiscountPercentage.setText(discountStr);
             
-            double discountPrice = cart.getTotalPriceApplyDiscount();
+            discountPrice = cart.getTotalPriceApplyDiscount();
             txtDiscountMinus.setText(String.valueOf(discountPrice));
             
             totalBill -= discountPrice;
@@ -535,7 +588,15 @@ public class ExportBillForm extends javax.swing.JFrame {
         txtAccPointTotal.setText(String.valueOf(accPoint));
         
         chkAccPoint.setSelected(false);
+        chkAccPoint.setEnabled(false);
+        
+        txtChooceAccPoint.setText("");
         txtChooceAccPoint.setEditable(false);
+        
+        totalBill += numAccPoint * 1000;
+        lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
+        txtAccPointMinus.setText("");
+        numAccPoint = 0;
         
         if (accPoint != 0) {
             chkAccPoint.setEnabled(true);

@@ -27,6 +27,7 @@ public class ApplyCustomerForm extends javax.swing.JFrame {
         this.homeForm = homeForm;
         this.setTitle("Choose Customer Form");
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -345,6 +346,9 @@ public class ApplyCustomerForm extends javax.swing.JFrame {
                     break;
                 }
             }
+            
+            homeForm.setActiveChooseCustomerForm(false);
+            this.setVisible(false);
         }
     }//GEN-LAST:event_btnApplyActionPerformed
 

@@ -29,6 +29,7 @@ public class CustomerForm extends javax.swing.JFrame {
         this.setTitle("Customer Form");
         this.homeForm = homeForm;
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         
         tableCustomer.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         TableColumnModel columnModel = tableCustomer.getColumnModel();

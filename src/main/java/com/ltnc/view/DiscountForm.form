@@ -97,10 +97,14 @@
                 <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
                   <TableColumnModel selectionModel="0"/>
                 </Property>
+                <Property name="rowHeight" type="int" value="35"/>
                 <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
                   <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
                 </Property>
               </Properties>
+              <Events>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tableDiscountMouseClicked"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -155,7 +159,6 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Component id="jLabel9" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="jdateEnd" alignment="0" min="-2" pref="234" max="-2" attributes="0"/>
-                                      <Component id="btnDelete" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
@@ -163,12 +166,15 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" pref="66" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="204" pref="204" max="-2" attributes="0"/>
-                                  <Component id="btnExit" min="-2" pref="154" max="-2" attributes="0"/>
-                              </Group>
                               <Component id="btnEdit" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
-                              <Component id="btnAdd" min="-2" pref="154" max="-2" attributes="0"/>
+                              <Component id="btnAdd" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
+                              <Group type="102" attributes="0">
+                                  <EmptySpace min="204" pref="204" max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="btnExit" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
+                                      <Component id="btnDelete" alignment="0" min="-2" pref="154" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
                           </Group>
                       </Group>
                   </Group>
@@ -200,16 +206,16 @@
                       <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" attributes="0">
-                      <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                          <Component id="jdateStart" min="-2" max="-2" attributes="0"/>
+                          <Component id="jdateStart" max="32767" attributes="0"/>
                       </Group>
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="1" attributes="0">
                           <Component id="jLabel9" min="-2" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="3" max="-2" attributes="0"/>
-                          <Component id="jdateEnd" min="-2" max="-2" attributes="0"/>
+                          <Component id="jdateEnd" min="-2" pref="38" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -217,7 +223,7 @@
                       <Component id="btnAdd" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
                       <Component id="btnDelete" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="btnEdit" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>
                       <Component id="btnExit" alignment="3" min="-2" pref="43" max="-2" attributes="0"/>

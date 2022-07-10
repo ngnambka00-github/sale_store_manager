@@ -41,6 +41,7 @@ public class CategoryForm extends javax.swing.JFrame {
         this.setTitle("Category Form");
         this.homeForm = homeForm;
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
 
         modelCategory = (DefaultComboBoxModel) cbCategory.getModel();
         listCategory = CategoryDAO.getAllCategory();

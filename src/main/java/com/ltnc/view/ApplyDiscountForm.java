@@ -27,6 +27,7 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
         this.homeForm = homeForm;
         this.setTitle("Choose Discount Form");
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -54,7 +55,7 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
             modelDiscount.removeRow(0);
         }
         
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (!listDiscount.isEmpty()) {
             for (Discount d : listDiscount) {
                 String startStr = sdf.format(d.getStart());
@@ -198,6 +199,9 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
                     break;
                 }
             }
+            
+            homeForm.setActiveChooseDiscountForm(false);
+            this.setVisible(false);
         }
     }//GEN-LAST:event_btnApplyActionPerformed
 

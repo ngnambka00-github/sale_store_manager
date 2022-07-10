@@ -28,6 +28,7 @@ public class OrderForm extends javax.swing.JFrame {
         this.setTitle("Order Form");
         this.homeForm = homeForm;
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -104,6 +105,11 @@ public class OrderForm extends javax.swing.JFrame {
         }
     );
     tableOrder.setRowHeight(35);
+    tableOrder.addMouseListener(new java.awt.event.MouseAdapter() {
+        public void mouseClicked(java.awt.event.MouseEvent evt) {
+            tableOrderMouseClicked(evt);
+        }
+    });
     jScrollPane1.setViewportView(tableOrder);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -356,6 +362,10 @@ public class OrderForm extends javax.swing.JFrame {
     private void txtEmailCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailCustomerActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtEmailCustomerActionPerformed
+
+    private void tableOrderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableOrderMouseClicked
+        
+    }//GEN-LAST:event_tableOrderMouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
