@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -1161,9 +1162,11 @@ public class HomeForm extends javax.swing.JFrame {
 
     private void btnExportBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportBillActionPerformed
         if (!activeExportBillForm) {
+            UUID uuid = UUID.randomUUID();
+            
             activeExportBillForm = true;
             
-            ExportBillForm ebf = new ExportBillForm(this);
+            ExportBillForm ebf = new ExportBillForm(this, uuid.toString());
             ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             ebf.setVisible(true);
         }

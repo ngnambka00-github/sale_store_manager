@@ -1,6 +1,7 @@
 
 package com.ltnc.view;
 
+import com.ltnc.entity.Discount;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -14,15 +15,18 @@ public class ExportBillForm extends javax.swing.JFrame {
     private boolean activeChooseCustomerForm = false;
     private boolean activeChooseDiscountForm = false;
     
+    private Discount billDiscount = null;
+    
     public ExportBillForm() {
         initComponents();
     }
 
-    public ExportBillForm(HomeForm homeForm) {
+    public ExportBillForm(HomeForm homeForm, String uuid) {
         initComponents();
         this.homeForm = homeForm;
         this.setTitle("Export Bill Form");
         this.setResizable(false);
+        txtBillCode.setText(uuid);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -188,6 +192,11 @@ public class ExportBillForm extends javax.swing.JFrame {
 
     chkDiscount.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     chkDiscount.setText("Discount");
+    chkDiscount.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            chkDiscountActionPerformed(evt);
+        }
+    });
 
     jCheckBox1.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     jCheckBox1.setText("Minus Accumulated Point");
@@ -232,8 +241,7 @@ public class ExportBillForm extends javax.swing.JFrame {
                                 .addComponent(jLabel2)
                                 .addComponent(jLabel1))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(txtBillCode, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(jLabel3)
@@ -241,9 +249,10 @@ public class ExportBillForm extends javax.swing.JFrame {
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                         .addComponent(txtPhoneNumber, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jLabel4))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addComponent(btnChooseCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                        .addComponent(jLabel4)))
+                                .addComponent(txtBillCode))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(btnChooseCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addComponent(chkDiscount)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -367,6 +376,16 @@ public class ExportBillForm extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnChooseDiscountActionPerformed
 
+    private void chkDiscountActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkDiscountActionPerformed
+        boolean isDiscount = chkDiscount.isSelected();
+        if (isDiscount) {
+            btnChooseDiscount.setEnabled(true);
+        }
+        else {
+            btnChooseDiscount.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkDiscountActionPerformed
+
 
     public void setActiveChooseCustomerForm(boolean activeChooseCustomerForm) {
         this.activeChooseCustomerForm = activeChooseCustomerForm;
@@ -376,6 +395,15 @@ public class ExportBillForm extends javax.swing.JFrame {
         this.activeChooseDiscountForm = activeChooseDiscountForm;
     }
 
+    public void applyDiscount(Discount d) {
+        if (d != null) {
+            this.billDiscount = d;
+            
+            String discountStr = String.format("%2.2f%%", d.getPrecentDiscount());
+            txtDiscountName.setText(d.getName());
+            txtDiscountPercentage.setText(discountStr);
+        }
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChooseCustomer;

@@ -1,12 +1,22 @@
 
 package com.ltnc.view;
 
+import com.ltnc.dao.DiscountDAO;
+import com.ltnc.entity.Discount;
+import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 public class ApplyDiscountForm extends javax.swing.JFrame {
 
+    private DefaultTableModel modelDiscount = null;
     private ExportBillForm homeForm = null;
+    
+    private List<Discount> listDiscount = null;
     
     public ApplyDiscountForm() {
         initComponents();
@@ -24,8 +34,39 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
                 homeForm.setActiveChooseDiscountForm(false);
             }
         });
+        
+        modelDiscount = (DefaultTableModel) tableDiscount.getModel();
+        tableDiscount.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
+        TableColumnModel columnProductModel = tableDiscount.getColumnModel();
+        columnProductModel.getColumn(0).setPreferredWidth(10);
+        columnProductModel.getColumn(1).setPreferredWidth(250);
+        columnProductModel.getColumn(2).setPreferredWidth(100);
+        columnProductModel.getColumn(3).setPreferredWidth(100);
+        columnProductModel.getColumn(3).setPreferredWidth(80);
+        
+        listDiscount = DiscountDAO.getAllDiscount();
+        uploadDataToTable(DiscountDAO.getDiscountNotOutOfDate(listDiscount));
     }
 
+    
+    public void uploadDataToTable(List<Discount> listDiscount) {
+        while (modelDiscount.getRowCount() != 0) {
+            modelDiscount.removeRow(0);
+        }
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        if (!listDiscount.isEmpty()) {
+            for (Discount d : listDiscount) {
+                String startStr = sdf.format(d.getStart());
+                String endStr = sdf.format(d.getEnd());
+                String discountStr = String.format("%2.2f%%", d.getPrecentDiscount());
+                
+                modelDiscount.addRow(new Object[] {
+                    d.getIdDiscount(), d.getName(), startStr, endStr, discountStr
+                });
+            }
+        }
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -51,9 +92,19 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
 
         btnSearch.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
 
         btnApply.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         btnApply.setText("Apply");
+        btnApply.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnApplyActionPerformed(evt);
+            }
+        });
 
         tableDiscount.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         tableDiscount.setModel(new javax.swing.table.DefaultTableModel(
@@ -122,6 +173,33 @@ public class ApplyDiscountForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        String contentSearch = txtSearch.getText();
+        
+        if (contentSearch.isEmpty()) {
+            listDiscount = DiscountDAO.getAllDiscount();
+        } else {
+            listDiscount = DiscountDAO.getDiscountsByName(contentSearch);
+        }
+        
+        uploadDataToTable(DiscountDAO.getDiscountNotOutOfDate(listDiscount));
+    }//GEN-LAST:event_btnSearchActionPerformed
+
+    private void btnApplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApplyActionPerformed
+        int selectedIndex = tableDiscount.getSelectedRow();
+        
+        if (selectedIndex != -1) {
+            int idDiscount = Integer.parseInt(modelDiscount.getValueAt(selectedIndex, 0).toString());
+            
+            for (Discount d : listDiscount) {
+                if (d.getIdDiscount() == idDiscount) {
+                    homeForm.applyDiscount(d);
+                    break;
+                }
+            }
+        }
+    }//GEN-LAST:event_btnApplyActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

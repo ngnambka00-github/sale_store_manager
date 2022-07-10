@@ -247,7 +247,7 @@ public class UtilDAO {
                 Date start = rs.getDate("start");
                 Date end = rs.getDate("end");
                 
-                Discount discount = new Discount(name, description, percentDiscount, start, end);
+                Discount discount = new Discount(idDiscount, name, description, percentDiscount, start, end);
                 listDiscount.add(discount);
             }
             // close connection
