@@ -12,6 +12,14 @@ public class Customer {
     public Customer() {
     }
 
+    public Customer(String name, String phoneNumber, String email) {
+        this.name = name;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.accumulatedPoint = 0;
+    }
+
+    
     public Customer(String name, String phoneNumber, String email, int accumulatedPoint) {
         this.name = name;
         this.phoneNumber = phoneNumber;

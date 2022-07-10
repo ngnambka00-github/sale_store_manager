@@ -1166,7 +1166,7 @@ public class HomeForm extends javax.swing.JFrame {
             
             activeExportBillForm = true;
             
-            ExportBillForm ebf = new ExportBillForm(this, uuid.toString());
+            ExportBillForm ebf = new ExportBillForm(this, uuid.toString(), cart);
             ebf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
             ebf.setVisible(true);
         }

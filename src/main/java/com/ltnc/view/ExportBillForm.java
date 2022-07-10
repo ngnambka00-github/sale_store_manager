@@ -1,10 +1,15 @@
 
 package com.ltnc.view;
 
+import com.ltnc.entity.Cart;
+import com.ltnc.entity.CartDetail;
+import com.ltnc.entity.Customer;
 import com.ltnc.entity.Discount;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -12,6 +17,8 @@ public class ExportBillForm extends javax.swing.JFrame {
     
     private DefaultTableModel modelProduct = null;
     private HomeForm homeForm = null;
+    private Cart cart;
+    private double totalBill = 0;
     private boolean activeChooseCustomerForm = false;
     private boolean activeChooseDiscountForm = false;
     
@@ -21,9 +28,10 @@ public class ExportBillForm extends javax.swing.JFrame {
         initComponents();
     }
 
-    public ExportBillForm(HomeForm homeForm, String uuid) {
+    public ExportBillForm(HomeForm homeForm, String uuid, Cart cart) {
         initComponents();
         this.homeForm = homeForm;
+        this.cart = cart;
         this.setTitle("Export Bill Form");
         this.setResizable(false);
         txtBillCode.setText(uuid);
@@ -38,8 +46,31 @@ public class ExportBillForm extends javax.swing.JFrame {
         // Thiet lap giao dien co ban
         tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         modelProduct = (DefaultTableModel) tableProduct.getModel();
+        
+        List<CartDetail> listCartDetail = cart.getListCartDetail();
+        uploadDataToTable(listCartDetail);
     }
 
+    public void uploadDataToTable(List<CartDetail> listCartDetail) {
+        while (modelProduct.getRowCount() != 0) {
+            modelProduct.removeRow(0);
+        }
+        
+        if (!listCartDetail.isEmpty()) {
+            for (CartDetail cd : listCartDetail) {
+                modelProduct.addRow(new Object[] {
+                    cd.getProduct().getIdProduct(), cd.getProduct().getName(), cd.getQuantity(), cd.getTotalCartDetail()
+                });
+            }
+        }
+        
+        double totalPrice = cart.getTotalPriceNotApplyDiscount();
+        txtTotalPrices.setText(String.valueOf(totalPrice));
+        
+        totalBill = totalPrice;
+        lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -53,9 +84,9 @@ public class ExportBillForm extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         txtPhoneNumber = new javax.swing.JTextField();
         btnChooseCustomer = new javax.swing.JButton();
-        jTextField4 = new javax.swing.JTextField();
+        txtChooceAccPoint = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        txtAccPointTotal = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         txtDiscountName = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
@@ -71,7 +102,10 @@ public class ExportBillForm extends javax.swing.JFrame {
         lblTotalBill = new javax.swing.JLabel();
         btnExportBill = new javax.swing.JButton();
         chkDiscount = new javax.swing.JCheckBox();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        chkAccPoint = new javax.swing.JCheckBox();
+        txtTotalPrices = new javax.swing.JTextField();
+        jLabel11 = new javax.swing.JLabel();
+        btnApplyAccPoint = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -112,14 +146,14 @@ public class ExportBillForm extends javax.swing.JFrame {
             }
         });
 
-        jTextField4.setEditable(false);
-        jTextField4.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+        txtChooceAccPoint.setEditable(false);
+        txtChooceAccPoint.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
         jLabel5.setFont(new java.awt.Font("Loma", 1, 24)); // NOI18N
         jLabel5.setText("/");
 
-        jTextField5.setEditable(false);
-        jTextField5.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+        txtAccPointTotal.setEditable(false);
+        txtAccPointTotal.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
         jLabel6.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         jLabel6.setText("Discount Name");
@@ -189,6 +223,11 @@ public class ExportBillForm extends javax.swing.JFrame {
 
     btnExportBill.setFont(new java.awt.Font("Loma", 0, 24)); // NOI18N
     btnExportBill.setText("Export Bill");
+    btnExportBill.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnExportBillActionPerformed(evt);
+        }
+    });
 
     chkDiscount.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     chkDiscount.setText("Discount");
@@ -198,9 +237,24 @@ public class ExportBillForm extends javax.swing.JFrame {
         }
     });
 
-    jCheckBox1.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
-    jCheckBox1.setText("Minus Accumulated Point");
-    jCheckBox1.setEnabled(false);
+    chkAccPoint.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    chkAccPoint.setText("Minus Accumulated Point");
+    chkAccPoint.setEnabled(false);
+    chkAccPoint.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            chkAccPointActionPerformed(evt);
+        }
+    });
+
+    txtTotalPrices.setEditable(false);
+    txtTotalPrices.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+
+    jLabel11.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    jLabel11.setText("Total Prices");
+
+    btnApplyAccPoint.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    btnApplyAccPoint.setText("Apply Acc Point");
+    btnApplyAccPoint.setEnabled(false);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -218,24 +272,29 @@ public class ExportBillForm extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(lblTotalBill)
                                 .addGroup(jPanel1Layout.createSequentialGroup()
+                                    .addGap(21, 21, 21)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                         .addComponent(jLabel9)
-                                        .addComponent(jLabel10))
+                                        .addComponent(jLabel10)
+                                        .addComponent(jLabel11))
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(txtAccPointMinus, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
-                                        .addComponent(txtDiscountMinus, javax.swing.GroupLayout.Alignment.TRAILING)))))))
+                                        .addComponent(txtDiscountMinus, javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(txtTotalPrices, javax.swing.GroupLayout.Alignment.TRAILING)))))))
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addGap(27, 27, 27)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jCheckBox1)
+                            .addComponent(chkAccPoint)
                             .addGap(38, 38, 38)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtChooceAccPoint, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel5)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtAccPointTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnApplyAccPoint))
                         .addGroup(jPanel1Layout.createSequentialGroup()
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(jLabel2)
@@ -297,10 +356,11 @@ public class ExportBillForm extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createSequentialGroup()
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtChooceAccPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel5)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jCheckBox1))
+                        .addComponent(txtAccPointTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(chkAccPoint)
+                        .addComponent(btnApplyAccPoint))
                     .addGap(12, 12, 12)
                     .addComponent(btnChooseDiscount, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -317,19 +377,27 @@ public class ExportBillForm extends javax.swing.JFrame {
                         .addComponent(chkDiscount))))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(txtDiscountMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel9))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtAccPointMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addComponent(btnExportBill))
-            .addGap(12, 12, 12)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(55, 55, 55)
+                    .addComponent(btnExportBill)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtTotalPrices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel11))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtDiscountMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtAccPointMinus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel10))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
             .addComponent(lblTotalBill)
-            .addContainerGap(20, Short.MAX_VALUE))
+            .addContainerGap())
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -383,8 +451,54 @@ public class ExportBillForm extends javax.swing.JFrame {
         }
         else {
             btnChooseDiscount.setEnabled(false);
+            txtDiscountMinus.setText("");
+            
+            txtDiscountName.setText("");
+            txtDiscountPercentage.setText("");
+            
+            double discountPrice = cart.getTotalPriceApplyDiscount();
+            cart.setDiscount(null);
+            totalBill += discountPrice;
+            lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
         }
     }//GEN-LAST:event_chkDiscountActionPerformed
+
+    private void btnExportBillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExportBillActionPerformed
+        if (cart.getCustomer() == null) {
+            JOptionPane.showMessageDialog(null, "Customer Choosing is required", "Error", JOptionPane.ERROR_MESSAGE);    
+            return;
+        }
+        
+        int numberChoice = 0;
+        if (chkAccPoint.isSelected()) {
+            String numberChoiceStr = txtChooceAccPoint.getText();
+            if (numberChoiceStr.length() == 0) {
+                JOptionPane.showMessageDialog(null, "Fill Number of Accumulated Point is required", "Error", JOptionPane.ERROR_MESSAGE);    
+                txtChooceAccPoint.requestFocus();
+                return;
+            }
+            
+            try {
+                numberChoice = Integer.parseInt(numberChoiceStr);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Number of Accumulated Point Choose must be less than Total Accumulated Point", "Error", JOptionPane.ERROR_MESSAGE);
+                txtChooceAccPoint.requestFocus();
+                return;
+            }
+        }
+    }//GEN-LAST:event_btnExportBillActionPerformed
+
+    private void chkAccPointActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAccPointActionPerformed
+        boolean status = chkAccPoint.isSelected();
+        
+        if (status) {
+            txtChooceAccPoint.setEditable(true);
+            btnApplyAccPoint.setEnabled(true);
+        } else {
+            txtChooceAccPoint.setEditable(false);
+            btnApplyAccPoint.setEnabled(false);
+        }
+    }//GEN-LAST:event_chkAccPointActionPerformed
 
 
     public void setActiveChooseCustomerForm(boolean activeChooseCustomerForm) {
@@ -396,23 +510,48 @@ public class ExportBillForm extends javax.swing.JFrame {
     }
 
     public void applyDiscount(Discount d) {
-        if (d != null) {
-            this.billDiscount = d;
+        if (d != null && chkDiscount.isSelected()) {
+            cart.setDiscount(d);
             
             String discountStr = String.format("%2.2f%%", d.getPrecentDiscount());
             txtDiscountName.setText(d.getName());
             txtDiscountPercentage.setText(discountStr);
+            
+            double discountPrice = cart.getTotalPriceApplyDiscount();
+            txtDiscountMinus.setText(String.valueOf(discountPrice));
+            
+            totalBill -= discountPrice;
+            lblTotalBill.setText("Total Bill: " + String.valueOf(totalBill));
+        }
+    }
+    
+    public void applyCustomer(Customer c) {
+        cart.setCustomer(c);
+        
+        txtCustomerName.setText(c.getName());
+        txtPhoneNumber.setText(c.getPhoneNumber());
+        
+        int accPoint = c.getAccumulatedPoint();
+        txtAccPointTotal.setText(String.valueOf(accPoint));
+        
+        chkAccPoint.setSelected(false);
+        txtChooceAccPoint.setEditable(false);
+        
+        if (accPoint != 0) {
+            chkAccPoint.setEnabled(true);
         }
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnApplyAccPoint;
     private javax.swing.JButton btnChooseCustomer;
     private javax.swing.JButton btnChooseDiscount;
     private javax.swing.JButton btnExportBill;
+    private javax.swing.JCheckBox chkAccPoint;
     private javax.swing.JCheckBox chkDiscount;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -423,16 +562,17 @@ public class ExportBillForm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
     private javax.swing.JLabel lblTotalBill;
     private javax.swing.JTable tableProduct;
     private javax.swing.JTextField txtAccPointMinus;
+    private javax.swing.JTextField txtAccPointTotal;
     private javax.swing.JTextField txtBillCode;
+    private javax.swing.JTextField txtChooceAccPoint;
     private javax.swing.JTextField txtCustomerName;
     private javax.swing.JTextField txtDiscountMinus;
     private javax.swing.JTextField txtDiscountName;
     private javax.swing.JTextField txtDiscountPercentage;
     private javax.swing.JTextField txtPhoneNumber;
+    private javax.swing.JTextField txtTotalPrices;
     // End of variables declaration//GEN-END:variables
 }

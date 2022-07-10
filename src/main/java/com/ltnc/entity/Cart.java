@@ -7,15 +7,14 @@ import java.util.List;
 
 public class Cart {
     private int idCart;
-    private Customer customer;
+    private Customer customer = null;
     private Date dateCreated;
-    private Discount discount;
+    private Discount discount = null;
     private List<Product> listProduct;
 
     public Cart() {
         listProduct = new ArrayList<>();
-        dateCreated = new Date(12344);
-        
+        dateCreated = new Date(new java.util.Date().getTime());
     }
 
     public Cart(int idCart, Customer customer, Date dateCreated, Discount discount, List<Product> listProduct) {
@@ -66,6 +65,14 @@ public class Cart {
         this.listProduct = listProduct;
     }
 
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
+    
     @Override
     public String toString() {
         return "Cart{" + "idCart=" + idCart + ", customer=" + customer + ", dateCreated=" + dateCreated + ", discount=" + discount + ", listProduct=" + listProduct + '}';
@@ -111,5 +118,20 @@ public class Cart {
         }
         
         return listCartDetail;
+    }
+    
+    public double getTotalPriceNotApplyDiscount() {
+        double price = 0;
+        for (Product p :listProduct) {
+            price += p.getPrice();
+        }
+        return price;
+    }
+    
+    public double getTotalPriceApplyDiscount() {
+        if (discount != null) {
+            return getTotalPriceNotApplyDiscount() * discount.getPrecentDiscount() / 100 ;
+        }
+        return getTotalPriceNotApplyDiscount();
     }
 }

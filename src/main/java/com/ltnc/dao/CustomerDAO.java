@@ -91,4 +91,13 @@ public class CustomerDAO {
     public static int updateAccumulatedPoint(Customer customer) {
         return UtilDAO.queryUpdate(QUERY_UPDATE_ACC_POINT, customer.getAccumulatedPoint(), customer.getIdCustomer());
     }
+    
+    public static int insertCustomerReturnKey(Customer customer) {
+        return UtilDAO.insertReturnKey(
+                QUERY_ADD_NEW_CUSTOMER,
+                customer.getName(), 
+                customer.getPhoneNumber(), 
+                customer.getEmail(), 
+                customer.getAccumulatedPoint());
+    }
 }
