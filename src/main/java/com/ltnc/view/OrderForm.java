@@ -40,6 +40,7 @@ public class OrderForm extends javax.swing.JFrame {
         });
         
         jdateSearch.setDateFormatString("dd/MM/yyyy");
+        jdateCreated.setDateFormatString("dd/MM/yyyy");
         
         // Thiet lap giao dien co ban
         TableColumnModel columnOrderModel = tableOrder.getColumnModel();
@@ -56,6 +57,9 @@ public class OrderForm extends javax.swing.JFrame {
         columnProductModel.getColumn(3).setPreferredWidth(60);
         tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
         modelProduct = (DefaultTableModel) tableProduct.getModel();
+        
+        jdateSearch.setDate(new java.util.Date());
+        btnSearchActionPerformed(null);
     }
 
     public void clearAllForm() {
@@ -345,7 +349,7 @@ public class OrderForm extends javax.swing.JFrame {
     jLabel12.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     jLabel12.setText("Minus Accumulated Point");
 
-    lblTotalBill.setFont(new java.awt.Font("Loma", 1, 24)); // NOI18N
+    lblTotalBill.setFont(new java.awt.Font("Loma", 1, 28)); // NOI18N
     lblTotalBill.setForeground(new java.awt.Color(255, 0, 0));
     lblTotalBill.setText("Total Bill: 000.000.000");
 
@@ -399,12 +403,13 @@ public class OrderForm extends javax.swing.JFrame {
                                     .addComponent(jdateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE))))
                         .addGroup(jPanel3Layout.createSequentialGroup()
                             .addGap(16, 16, 16)
-                            .addComponent(jLabel9))
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addGap(166, 166, 166)
-                            .addComponent(lblTotalBill)))
+                            .addComponent(jLabel9)))
                     .addGap(0, 0, Short.MAX_VALUE)))
             .addContainerGap())
+        .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGap(143, 143, 143)
+            .addComponent(lblTotalBill)
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -436,7 +441,7 @@ public class OrderForm extends javax.swing.JFrame {
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(lblTotalBill)
-            .addContainerGap(20, Short.MAX_VALUE))
+            .addContainerGap(13, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

@@ -212,11 +212,6 @@
                   <Component id="jScrollPane1" min="-2" pref="397" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <EmptySpace min="-2" pref="55" max="-2" attributes="0"/>
-                          <Component id="btnExportBill" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace max="32767" attributes="0"/>
-                      </Group>
-                      <Group type="102" alignment="1" attributes="0">
                           <EmptySpace type="unrelated" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="txtTotalPrices" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -233,6 +228,11 @@
                               <Component id="jLabel10" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace min="-2" pref="55" max="-2" attributes="0"/>
+                          <Component id="btnExportBill" min="-2" pref="58" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
                   <Component id="lblTotalBill" min="-2" max="-2" attributes="0"/>
@@ -473,7 +473,7 @@
         <Component class="javax.swing.JLabel" name="lblTotalBill">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Loma" size="24" style="1"/>
+              <Font name="Loma" size="28" style="1"/>
             </Property>
             <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="0" green="0" red="ff" type="rgb"/>
@@ -484,7 +484,7 @@
         <Component class="javax.swing.JButton" name="btnExportBill">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Loma" size="24" style="0"/>
+              <Font name="Loma" size="24" style="1"/>
             </Property>
             <Property name="text" type="java.lang.String" value="Export Bill"/>
           </Properties>

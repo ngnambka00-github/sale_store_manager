@@ -1236,6 +1236,9 @@ public class HomeForm extends javax.swing.JFrame {
         btnClearBill.setEnabled(false);
         
         updateViewCart();
+        
+        txtTotalItem.setText("");
+        txtTotalBill.setText("");
     }//GEN-LAST:event_btnClearBillActionPerformed
     
     public void updateCategoryCbFromOtherFrame(Demand demand, Category category) {
