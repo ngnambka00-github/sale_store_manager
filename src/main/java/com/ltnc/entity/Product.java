@@ -87,4 +87,13 @@ public class Product {
         return "Product{" + "idProduct=" + idProduct + ", name=" + name + ", price=" + price + ", urlImage=" + urlImage + ", category=" + category + ", quantity=" + quantity + '}';
     }
     
+    public void UpdateProduct(Product p) {
+        this.idProduct = p.idProduct;
+        this.name = p.name;
+        this.price = p.price;
+        this.urlImage = p.urlImage;
+        this.category = p.category;
+        this.quantity = p.quantity;
+    } 
+    
 }

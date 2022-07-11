@@ -507,15 +507,23 @@ public class ExportBillForm extends javax.swing.JFrame {
             return;
         }
         
-        // Xuat ra file .txt
-        cart.getDateCreated().setTime(new java.util.Date().getTime());
-        cart.setMinusAccPoint(numAccPoint);
-        String fileName = CartUtils.genFilePathBill(cart);
-        CartUtils.writeBill(fileName, cart);
-        
-        // update thong tin database 
-        
-        // update lai giao dien lop cha
+        int result = JOptionPane.showConfirmDialog(this, "Sure? You want to export this bill?", "Question", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if(result == JOptionPane.YES_OPTION){
+            // Xuat ra file .txt
+            cart.getDateCreated().setTime(new java.util.Date().getTime());
+            cart.setMinusAccPoint(numAccPoint);
+            String fileName = CartUtils.genFilePathBill(cart);
+            CartUtils.writeBill(fileName, cart);
+
+            // update thong tin database
+            CartUtils.flowInsertCartToDatabase(cart);
+            JOptionPane.showMessageDialog(null, " Export Bill Successfully");
+            
+            // update lai giao dien lop cha
+            homeForm.updateViewFromExportBill();
+            homeForm.setActiveExportBillForm(false);
+            this.setVisible(false);
+        }
     }//GEN-LAST:event_btnExportBillActionPerformed
 
     private void chkAccPointActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkAccPointActionPerformed

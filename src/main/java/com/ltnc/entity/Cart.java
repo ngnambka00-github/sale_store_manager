@@ -162,10 +162,10 @@ public class Cart {
     }
     
     public double getMinusByAccPoint() {
-        return minusAccPoint * 1000;
+        return minusAccPoint * 1000.0;
     }
     
     public double getFinalInvoice() {
-        return getTotalPriceNotApplyDiscount() - getMinusAccPoint() - getMinusByDiscount();
+        return getTotalPriceNotApplyDiscount() - getMinusByAccPoint()- getMinusByDiscount();
     }
 }

@@ -2,6 +2,10 @@
 package com.ltnc.utils;
 
 import com.ltnc.Assignment_ltnc;
+import com.ltnc.dao.CartDAO;
+import com.ltnc.dao.CartDetailDAO;
+import com.ltnc.dao.CustomerDAO;
+import com.ltnc.dao.ProductDAO;
 import com.ltnc.entity.Cart;
 import com.ltnc.entity.CartDetail;
 import java.io.File;
@@ -45,14 +49,14 @@ public class CartUtils {
                 Logger.getLogger(Assignment_ltnc.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss");
             String dateStr = sdf.format(cart.getDateCreated());
 
             output.printf("===================================================================\n\n");
-            output.printf("	        +--------------------------+\n");
-            output.printf("	        |          INVOICE         |\n");
-            output.printf("%17s Date Created: %s |\n", "|", dateStr);
-            output.printf("		+--------------------------+\n\n");
+            output.printf("	      +-----------------------------------+\n");
+            output.printf("	      |               INVOICE             |\n");
+            output.printf("%15s Date Created: %s |\n", "|", dateStr);
+            output.printf("	      +-----------------------------------+\n\n");
 
             output.printf("   Bill Code: %s\n\n", cart.getBillCode());
             output.printf("   Customer Name: %s\n", cart.getCustomer().getName());
@@ -73,7 +77,8 @@ public class CartUtils {
                 output.printf("  +--------+------------------------+----------+---------------+\n");
             }
 
-            output.printf("\n%46s : %2.2f\n", "Minus Discount", cart.getMinusByDiscount());
+            output.printf("\n%46s : %2.2f\n", "All Prices", cart.getTotalPriceNotApplyDiscount());
+            output.printf("%46s : %2.2f\n", "Minus Discount", cart.getMinusByDiscount());
             output.printf("%46s : %2.2f\n", "Minus Accumulated Point", cart.getMinusByAccPoint());
             output.printf("\n%46s : %2.2f\n\n", "TOTAL BILL", cart.getFinalInvoice());
 
@@ -86,6 +91,23 @@ public class CartUtils {
     
     
     public static void flowInsertCartToDatabase(Cart cart) {
+        Cart cartInsert = CartDAO.insertCartWithKey(cart);
         
+        if (cartInsert != null) {
+            int cartID = cartInsert.getIdCart();
+            List<CartDetail> listCartDetail = cartInsert.getListCartDetail();
+            
+            List<Integer> listRowCartDetailInsert = CartDetailDAO.insertCartDetail(cartID, listCartDetail);
+            List<Integer> listRowProductUpdate = ProductDAO.updateQuantityProductFromCart(listCartDetail);
+            int rowUpdateCustomer = CustomerDAO.increaseAccumulatedPoint(cartInsert.getCustomer().getIdCustomer(), cartInsert.getMinusAccPoint());
+            
+            if (listRowCartDetailInsert.isEmpty() || listRowProductUpdate.isEmpty() || rowUpdateCustomer == 0) {
+                System.out.println("Flow update failture");
+            } else {
+                System.out.println("Flow update successfully");
+            }
+        } else {
+            System.out.println("Cart is not inserted");
+        }
     }
 }

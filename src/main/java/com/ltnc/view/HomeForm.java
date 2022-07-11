@@ -3,7 +3,6 @@ package com.ltnc.view;
 
 import com.ltnc.dao.CategoryDAO;
 import com.ltnc.dao.ProductDAO;
-import com.ltnc.dao.UtilDAO;
 import com.ltnc.entity.Cart;
 import com.ltnc.entity.CartDetail;
 import com.ltnc.entity.Category;
@@ -915,11 +914,7 @@ public class HomeForm extends javax.swing.JFrame {
                 modelProduct.setValueAt(String.valueOf(product.getPrice()), indexSelected, 2);
                 modelProduct.setValueAt(String.valueOf(product.getQuantity()), indexSelected, 3);
                 
-                listProduct.get(indexSelected).setIdProduct(idProduct);
-                listProduct.get(indexSelected).setName(name);
-                listProduct.get(indexSelected).setPrice(price);
-                listProduct.get(indexSelected).setQuantity(quantity);
-                listProduct.get(indexSelected).setCategory(c);
+                listProduct.get(indexSelected).UpdateProduct(product);
                 
                 updateDetailProduct(listProduct.get(indexSelected));
             } else {
@@ -1235,7 +1230,7 @@ public class HomeForm extends javax.swing.JFrame {
         
         cart.getListProduct().clear();
         
-        btnDeleteProduct.setEnabled(false);
+        btnDeleteFromCart.setEnabled(false);
         btnExportBill.setEnabled(false);
         btnClearBill.setEnabled(false);
         
@@ -1293,6 +1288,34 @@ public class HomeForm extends javax.swing.JFrame {
             
             return;
         }
+    }
+    
+    
+    public void updateViewFromExportBill() {
+        btnClearBillActionPerformed(null);
+        cart = new Cart();
+        listProduct = ProductDAO.getAllProduct();
+        updateProductToTable(listProduct);
+        
+        
+        activateEditProduct = false;
+        loadImageToView(urlDefault);
+        
+        clearText();
+        activateInputForm(false);
+        
+        btnAddNewProduct.setEnabled(true);
+        btnDeleteProduct.setEnabled(false);
+        btnEditProduct.setEnabled(false);
+        btnExitTask.setEnabled(false);
+        
+        btnAddToCart.setEnabled(false);
+        
+        txtNumberOrderItem.setText("");
+        txtNumberOrderItem.setEditable(false);
+        
+        txtTotalItem.setText("");
+        txtTotalBill.setText("");
     }
     
     public boolean getIsSearch() {

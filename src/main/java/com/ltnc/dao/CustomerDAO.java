@@ -101,10 +101,10 @@ public class CustomerDAO {
                 customer.getAccumulatedPoint());
     }
     
-    public static int increaseAccumulatedPoint(int idCustomer) {
+    public static int increaseAccumulatedPoint(int idCustomer, int minusAccPoint) {
         Customer customer = getCustomerById(idCustomer);
         
-        int newAccPoint = customer.getAccumulatedPoint() + 1;
+        int newAccPoint = customer.getAccumulatedPoint() + 1 - minusAccPoint;
         customer.setAccumulatedPoint(newAccPoint);
         
         return UtilDAO.queryUpdate(
