@@ -168,4 +168,15 @@ public class Cart {
     public double getFinalInvoice() {
         return getTotalPriceNotApplyDiscount() - getMinusByAccPoint()- getMinusByDiscount();
     }
+    
+    public void updateListProductFromCartDetail(List<CartDetail> listCartDetail) {
+        listProduct = new ArrayList<>();
+        
+        for (CartDetail cd : listCartDetail) {
+            int quantity = cd.getQuantity();
+            for (int i = 0; i < quantity; i++) {
+                listProduct.add(cd.getProduct());
+            }
+        }
+    }
 }

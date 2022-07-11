@@ -16,7 +16,8 @@ public class DiscountDAO {
     private static String QUERY_DELETE_DISCOUNT = "DELETE FROM discount WHERE id_discount=?";
     private static String QUERY_ADD_NEW_DISCOUNT = "INSERT INTO discount (name, description, percent_discount, start, end) VALUES (?, ?, ?, ?, ?)";
     private static String QUERY_UPDATE_DISCOUNT = "UPDATE discount SET name=?, description=?, percent_discount=?, start=?, end=? WHERE id_discount=?";
-    
+    private static String QUERY_GET_DISCOUNT_BY_ID = "SELECT * FROM discount WHERE id_discount=?";
+            
     public static List<Discount> getAllDiscount() {
         return UtilDAO.getDiscounts(QUERY_ALL_DISCOUNT);
     }
@@ -86,6 +87,30 @@ public class DiscountDAO {
                 discount.getStart(), 
                 discount.getEnd(), 
                 discount.getIdDiscount());
+    }
+    
+    public static Discount getDiscountById(int idDiscount) {
+        Discount discount = null;
+        try {
+            Connection conn = ConnectData.getConnection();
+            PreparedStatement pstm = conn.prepareStatement(QUERY_GET_DISCOUNT_BY_ID);
+            pstm.setInt(1, idDiscount);
+            
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                discount = new Discount();
+                discount.setIdDiscount(rs.getInt("id_discount"));
+                discount.setName(rs.getString("name"));
+                discount.setDescription(rs.getString("description"));
+                discount.setPrecentDiscount(rs.getDouble("percent_discount"));
+                discount.setStart(rs.getDate("start"));
+                discount.setEnd(rs.getDate("end"));
+            }
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return discount;
     }
 
 }

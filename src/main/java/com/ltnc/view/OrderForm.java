@@ -1,9 +1,16 @@
 
 package com.ltnc.view;
 
+import com.ltnc.dao.CartDAO;
+import com.ltnc.entity.Cart;
+import com.ltnc.entity.CartDetail;
+import com.ltnc.entity.Customer;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Date;
+import java.util.List;
+import javax.smartcardio.Card;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -12,6 +19,7 @@ public class OrderForm extends javax.swing.JFrame {
     private HomeForm homeForm = null;
     private DefaultTableModel modelOrder = null;
     private DefaultTableModel modelProduct = null;
+    private List<Cart> listCart = null;
     
     public OrderForm() {
         initComponents();
@@ -31,6 +39,8 @@ public class OrderForm extends javax.swing.JFrame {
             }
         });
         
+        jdateSearch.setDateFormatString("dd/MM/yyyy");
+        
         // Thiet lap giao dien co ban
         TableColumnModel columnOrderModel = tableOrder.getColumnModel();
         columnOrderModel.getColumn(0).setPreferredWidth(140);
@@ -48,6 +58,61 @@ public class OrderForm extends javax.swing.JFrame {
         modelProduct = (DefaultTableModel) tableProduct.getModel();
     }
 
+    public void clearAllForm() {
+        txtIdCustomer.setText("");
+        txtNameCustomer.setText("");
+        txtPhoneCustomer.setText("");
+        txtEmailCustomer.setText("");
+        
+        txtCodeOrder.setText("");
+        jdateCreated.setDate(new java.util.Date());
+        
+        while (modelProduct.getRowCount() != 0) {
+            modelProduct.removeRow(0);
+        }
+        
+        txtTotalProduct.setText("");
+        txtDiscountID.setText("");
+        txtDiscountPrice.setText("");
+        txtAccumulatedPoint.setText("");
+        lblTotalBill.setText("Total Bill: 000.000.000");
+    }
+    
+    public void updateInputCustomer(Customer customer){
+        txtIdCustomer.setText(String.valueOf(customer.getIdCustomer()));
+        txtNameCustomer.setText(customer.getName());
+        txtPhoneCustomer.setText(customer.getPhoneNumber());
+        txtEmailCustomer.setText(customer.getEmail());
+    }
+    
+    public void updateDataToProductDetailTable(List<CartDetail> listCartDetail) {
+        while (modelProduct.getRowCount() != 0) {
+            modelProduct.removeRow(0);
+        }
+        
+        if (!listCartDetail.isEmpty()) {
+            for (CartDetail cd : listCartDetail) {
+                modelProduct.addRow(new Object[] {
+                    cd.getProduct().getIdProduct(), cd.getProduct().getName(), cd.getQuantity(), cd.getTotalCartDetail()
+                });
+            }
+        }
+    }
+    
+    public void updateDataToOrderTable(List<Cart> listCart) {
+        while (modelOrder.getRowCount() != 0) {
+            modelOrder.removeRow(0);
+        }
+        
+        if (!listCart.isEmpty()) {
+            for (Cart c : listCart) {
+                modelOrder.addRow(new Object[] {
+                    c.getBillCode(), c.getCustomer().getName(), c.getFinalInvoice()
+                });
+            }
+        }
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -56,9 +121,10 @@ public class OrderForm extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        dateSearch = new com.toedter.calendar.JDateChooser();
+        jdateSearch = new com.toedter.calendar.JDateChooser();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableOrder = new javax.swing.JTable();
+        btnSearch = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         txtIdCustomer = new javax.swing.JTextField();
@@ -72,7 +138,7 @@ public class OrderForm extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtCodeOrder = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        createdDateDetail = new com.toedter.calendar.JDateChooser();
+        jdateCreated = new com.toedter.calendar.JDateChooser();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tableProduct = new javax.swing.JTable();
@@ -83,6 +149,8 @@ public class OrderForm extends javax.swing.JFrame {
         txtAccumulatedPoint = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         lblTotalBill = new javax.swing.JLabel();
+        txtTotalProduct = new javax.swing.JTextField();
+        jLabel13 = new javax.swing.JLabel();
 
         jLabel1.setText("jLabel1");
 
@@ -94,15 +162,11 @@ public class OrderForm extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         jLabel2.setText("DateTime");
 
-        dateSearch.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+        jdateSearch.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
         tableOrder.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
         tableOrder.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
             },
             new String [] {
                 "Code Order", "Customer Name", "Total Bill"
@@ -122,25 +186,36 @@ public class OrderForm extends javax.swing.JFrame {
     });
     jScrollPane1.setViewportView(tableOrder);
 
+    btnSearch.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    btnSearch.setText("Search");
+    btnSearch.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            btnSearchActionPerformed(evt);
+        }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
         .addGroup(jPanel1Layout.createSequentialGroup()
-            .addGap(65, 65, 65)
+            .addGap(15, 15, 15)
             .addComponent(jLabel2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(dateSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jdateSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(btnSearch)
             .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 524, Short.MAX_VALUE)
     );
     jPanel1Layout.setVerticalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel1Layout.createSequentialGroup()
             .addGap(17, 17, 17)
             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                .addComponent(dateSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addComponent(jLabel2))
+                .addComponent(jdateSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel2)
+                .addComponent(btnSearch))
             .addGap(18, 18, 18)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
@@ -229,8 +304,8 @@ public class OrderForm extends javax.swing.JFrame {
     jLabel8.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     jLabel8.setText(" Created Date");
 
-    createdDateDetail.setEnabled(false);
-    createdDateDetail.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    jdateCreated.setEnabled(false);
+    jdateCreated.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
 
     jLabel9.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     jLabel9.setText("Product List");
@@ -238,10 +313,6 @@ public class OrderForm extends javax.swing.JFrame {
     tableProduct.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
     tableProduct.setModel(new javax.swing.table.DefaultTableModel(
         new Object [][] {
-            {null, null, null, null},
-            {null, null, null, null},
-            {null, null, null, null},
-            {null, null, null, null}
         },
         new String [] {
             "ID", "Product Name", "Quantity", "Prices"
@@ -276,7 +347,13 @@ public class OrderForm extends javax.swing.JFrame {
 
     lblTotalBill.setFont(new java.awt.Font("Loma", 1, 24)); // NOI18N
     lblTotalBill.setForeground(new java.awt.Color(255, 0, 0));
-    lblTotalBill.setText("Total Bill: 120.000.000$");
+    lblTotalBill.setText("Total Bill: 000.000.000");
+
+    txtTotalProduct.setEditable(false);
+    txtTotalProduct.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+
+    jLabel13.setFont(new java.awt.Font("Loma", 0, 18)); // NOI18N
+    jLabel13.setText("Total Product Prices");
 
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
@@ -285,36 +362,45 @@ public class OrderForm extends javax.swing.JFrame {
         .addGroup(jPanel3Layout.createSequentialGroup()
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 574, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addGap(0, 0, Short.MAX_VALUE))
-        .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGap(16, 16, 16)
+        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jLabel9)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                    .addGap(16, 16, 16)
+                    .addComponent(jLabel10)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(txtDiscountID, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel11))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING))))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(txtTotalProduct, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtAccumulatedPoint, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+                    .addComponent(txtDiscountPrice)))
+            .addContainerGap())
+        .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(16, 16, 16)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel7)
                         .addComponent(txtCodeOrder, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGap(18, 18, 18)
                     .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel8)
-                        .addComponent(createdDateDetail, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
-                            .addComponent(jLabel10)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(txtDiscountID, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel11))
-                        .addGroup(jPanel3Layout.createSequentialGroup()
-                            .addGap(0, 0, Short.MAX_VALUE)
-                            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(lblTotalBill)
-                                .addComponent(jLabel12))))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(txtAccumulatedPoint, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-                        .addComponent(txtDiscountPrice))))
-            .addContainerGap())
+                        .addComponent(jdateCreated, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(16, 16, 16)
+                    .addComponent(jLabel9))
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(166, 166, 166)
+                    .addComponent(lblTotalBill)))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
         jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -325,24 +411,28 @@ public class OrderForm extends javax.swing.JFrame {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                 .addComponent(txtCodeOrder)
-                .addComponent(createdDateDetail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jdateCreated, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(jLabel9)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(txtTotalProduct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jLabel13))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(jLabel10)
                 .addComponent(txtDiscountID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(txtDiscountPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel11))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addGap(6, 6, 6)
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(txtAccumulatedPoint, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(lblTotalBill)
-            .addGap(0, 0, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -374,17 +464,48 @@ public class OrderForm extends javax.swing.JFrame {
     }//GEN-LAST:event_txtEmailCustomerActionPerformed
 
     private void tableOrderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableOrderMouseClicked
+        int selectedIndex = tableOrder.getSelectedRow();
         
+        if (selectedIndex != -1) {
+            Cart c = listCart.get(selectedIndex);
+            
+            updateInputCustomer(c.getCustomer());
+            updateDataToProductDetailTable(c.getListCartDetail());
+            txtCodeOrder.setText(c.getBillCode());
+            jdateCreated.setDate(new java.util.Date(c.getDateCreated().getTime()));
+            txtAccumulatedPoint.setText(String.valueOf(c.getMinusByAccPoint()));
+            txtDiscountPrice.setText(String.valueOf(c.getMinusByDiscount()));
+            
+            txtTotalProduct.setText(String.valueOf(c.getTotalPriceNotApplyDiscount()));
+            if (c.getDiscount() == null) {
+                txtDiscountID.setText("NO DISCOUNT");
+            } else {
+                txtDiscountID.setText(String.valueOf(c.getDiscount().getIdDiscount()));
+            }
+            
+            lblTotalBill.setText("Total Bill: " + c.getFinalInvoice());
+        }
     }//GEN-LAST:event_tableOrderMouseClicked
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        clearAllForm();
+        
+        java.util.Date dateSearch = jdateSearch.getDate();
+        
+        if (dateSearch != null) { 
+            listCart = CartDAO.getAllCartByDate(new Date(dateSearch.getTime()));
+            updateDataToOrderTable(listCart);
+        }
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSearch;
     private javax.swing.ButtonGroup buttonGroup1;
-    private com.toedter.calendar.JDateChooser createdDateDetail;
-    private com.toedter.calendar.JDateChooser dateSearch;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -398,6 +519,8 @@ public class OrderForm extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private com.toedter.calendar.JDateChooser jdateCreated;
+    private com.toedter.calendar.JDateChooser jdateSearch;
     private javax.swing.JLabel lblTotalBill;
     private javax.swing.JTable tableOrder;
     private javax.swing.JTable tableProduct;
@@ -409,5 +532,6 @@ public class OrderForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtIdCustomer;
     private javax.swing.JTextField txtNameCustomer;
     private javax.swing.JTextField txtPhoneCustomer;
+    private javax.swing.JTextField txtTotalProduct;
     // End of variables declaration//GEN-END:variables
 }

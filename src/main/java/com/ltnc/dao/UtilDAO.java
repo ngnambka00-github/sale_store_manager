@@ -2,6 +2,8 @@
 package com.ltnc.dao;
 
 import com.ltnc.connection.ConnectData;
+import com.ltnc.entity.Cart;
+import com.ltnc.entity.CartDetail;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Customer;
 import com.ltnc.entity.Discount;
@@ -258,5 +260,81 @@ public class UtilDAO {
         }
         
         return listDiscount;
+    }
+
+    
+    public static List<Cart> getCarts(String query, Object ... parameters) {
+        List<Cart> listCart = new ArrayList<>();
+        
+        try {
+            // create connect to database
+            Connection conn = ConnectData.getConnection();
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int isCart = rs.getInt("id_cart");
+                int idCustomer = rs.getInt("id_customer");
+                Customer customer = CustomerDAO.getCustomerById(idCustomer);
+                
+                Date dateCreated = rs.getDate("date_created");
+                
+                int idDiscount = rs.getInt("id_discount");
+                Discount discount = null;
+                if (!rs.wasNull()) {
+                    discount = DiscountDAO.getDiscountById(idDiscount);
+                } 
+                
+                String billCode = rs.getString("bill_code");
+                int minusAccPoint = rs.getInt("minus_acc_point");
+                
+                List<CartDetail> listCartDetail = CartDetailDAO.getCartDetailFromCartID(isCart);
+                
+                Cart c = new Cart();
+                c.setIdCart(isCart);
+                c.setCustomer(customer);
+                c.setDateCreated(dateCreated);
+                c.setDiscount(discount);
+                c.setBillCode(billCode);
+                c.setMinusAccPoint(minusAccPoint);
+                c.updateListProductFromCartDetail(listCartDetail);
+                
+                listCart.add(c);
+            }
+            // close connection
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return listCart;
+    }
+    
+    public static List<CartDetail> getCartDetails(String query, Object ... parameters) {
+        List<CartDetail> listCartDetail = new ArrayList<>();
+        
+        try {
+            // create connect to database
+            Connection conn = ConnectData.getConnection();
+
+            PreparedStatement preparedStatement = fillQuery(conn, query, false, parameters);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                int idProduct = rs.getInt("id_product");
+                int quantity = rs.getInt("quantity");
+                Product p = ProductDAO.getProductById(idProduct);
+                CartDetail cd = new CartDetail(quantity, p);
+                
+                listCartDetail.add(cd);
+            }
+            // close connection
+            conn.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+        return listCartDetail;
     }
 }
