@@ -1,14 +1,24 @@
 
 package com.ltnc.view;
 
+import com.ltnc.Assignment_ltnc;
 import com.ltnc.entity.Cart;
 import com.ltnc.entity.CartDetail;
 import com.ltnc.entity.Customer;
 import com.ltnc.entity.Discount;
+import com.ltnc.utils.CartUtils;
 import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
@@ -42,6 +52,7 @@ public class ExportBillForm extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
         txtBillCode.setText(uuid);
+        cart.setBillCode(uuid);
         
         this.addWindowListener(new WindowAdapter() {
             @Override
@@ -497,6 +508,10 @@ public class ExportBillForm extends javax.swing.JFrame {
         }
         
         // Xuat ra file .txt
+        cart.getDateCreated().setTime(new java.util.Date().getTime());
+        cart.setMinusAccPoint(numAccPoint);
+        String fileName = CartUtils.genFilePathBill(cart);
+        CartUtils.writeBill(fileName, cart);
         
         // update thong tin database 
         

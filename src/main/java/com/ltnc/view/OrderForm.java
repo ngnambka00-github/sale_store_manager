@@ -5,22 +5,16 @@ import java.awt.Font;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 public class OrderForm extends javax.swing.JFrame {
 
     private HomeForm homeForm = null;
-    private DefaultTableModel orderModel = null;
-    private DefaultTableModel productModel = null;
+    private DefaultTableModel modelOrder = null;
+    private DefaultTableModel modelProduct = null;
     
     public OrderForm() {
         initComponents();
-        
-        // Thiet lap giao dien co ban
-        orderModel = (DefaultTableModel) tableOrder.getModel();
-        productModel = (DefaultTableModel) tableProduct.getModel();
-        
-        tableOrder.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
-        tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
     }
 
     public OrderForm(HomeForm homeForm) {
@@ -36,6 +30,22 @@ public class OrderForm extends javax.swing.JFrame {
                 homeForm.setActiveOrderForm(false);
             }
         });
+        
+        // Thiet lap giao dien co ban
+        TableColumnModel columnOrderModel = tableOrder.getColumnModel();
+        columnOrderModel.getColumn(0).setPreferredWidth(140);
+        columnOrderModel.getColumn(1).setPreferredWidth(100);
+        columnOrderModel.getColumn(2).setPreferredWidth(30);
+        tableOrder.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
+        modelOrder = (DefaultTableModel) tableOrder.getModel();
+        
+        TableColumnModel columnProductModel = tableProduct.getColumnModel();
+        columnProductModel.getColumn(0).setPreferredWidth(15);
+        columnProductModel.getColumn(1).setPreferredWidth(250);
+        columnProductModel.getColumn(2).setPreferredWidth(50);
+        columnProductModel.getColumn(3).setPreferredWidth(60);
+        tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
+        modelProduct = (DefaultTableModel) tableProduct.getModel();
     }
 
     @SuppressWarnings("unchecked")

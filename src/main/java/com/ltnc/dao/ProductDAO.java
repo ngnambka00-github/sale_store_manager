@@ -4,6 +4,8 @@ package com.ltnc.dao;
 import com.ltnc.entity.Category;
 import com.ltnc.entity.Product;
 import com.ltnc.connection.ConnectData;
+import com.ltnc.entity.Cart;
+import com.ltnc.entity.CartDetail;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -94,4 +96,19 @@ public class ProductDAO {
                 p.getQuantity());
     }
     
+    
+    public static List<Integer> updateQuantityProductFromCart(List<CartDetail> listCartDetail) {
+        List<Integer> listRow = new ArrayList<>();
+        
+        for (CartDetail cd : listCartDetail) {
+            int idProduct = cd.getProduct().getIdProduct();
+            Product p = getProductById(idProduct);
+            p.setQuantity(p.getQuantity() - cd.getQuantity());
+
+            int row = updateProduct(p);
+            listRow.add(row);
+        }
+        
+        return listRow;
+    }
 }

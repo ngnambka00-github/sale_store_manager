@@ -11,6 +11,8 @@ public class Cart {
     private Date dateCreated;
     private Discount discount = null;
     private List<Product> listProduct;
+    private String billCode = "";
+    private int minusAccPoint = 0;
 
     public Cart() {
         listProduct = new ArrayList<>();
@@ -133,5 +135,37 @@ public class Cart {
             return getTotalPriceNotApplyDiscount() * discount.getPrecentDiscount() / 100 ;
         }
         return getTotalPriceNotApplyDiscount();
+    }
+
+    public String getBillCode() {
+        return billCode;
+    }
+
+    public void setBillCode(String billCode) {
+        this.billCode = billCode;
+    }
+
+    public int getMinusAccPoint() {
+        return minusAccPoint;
+    }
+
+    public void setMinusAccPoint(int minusAccPoint) {
+        this.minusAccPoint = minusAccPoint;
+    }
+    
+    
+    public double getMinusByDiscount() {
+        if (discount == null) {
+            return 0;
+        }
+        return discount.getPrecentDiscount() * getTotalPriceNotApplyDiscount() / 100.0;
+    }
+    
+    public double getMinusByAccPoint() {
+        return minusAccPoint * 1000;
+    }
+    
+    public double getFinalInvoice() {
+        return getTotalPriceNotApplyDiscount() - getMinusAccPoint() - getMinusByDiscount();
     }
 }

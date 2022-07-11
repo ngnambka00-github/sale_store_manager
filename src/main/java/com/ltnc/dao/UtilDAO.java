@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +32,7 @@ public class UtilDAO {
             for (int i = 0; i < parameters.length; i++) {
                 if (parameters[i] == null) 
                 {
-                    preparedStatement.setString(i + 1, "");
+                    preparedStatement.setNull(i + 1, 0);
                 } 
                 else if (parameters[i] instanceof Boolean) 
                 {
@@ -45,9 +46,9 @@ public class UtilDAO {
                 {
                     preparedStatement.setDouble(i + 1, (Double) parameters[i]);
                 } 
-                else if (parameters[i] instanceof Date) 
+                else if (parameters[i] instanceof java.sql.Date) 
                 {
-                    preparedStatement.setDate(i + 1, (Date) parameters[i]);
+                    preparedStatement.setDate(i + 1, (java.sql.Date) parameters[i]);
                 } 
                 else if (parameters[i] instanceof String) {
                     String data = (String) parameters[i];

@@ -100,4 +100,16 @@ public class CustomerDAO {
                 customer.getEmail(), 
                 customer.getAccumulatedPoint());
     }
+    
+    public static int increaseAccumulatedPoint(int idCustomer) {
+        Customer customer = getCustomerById(idCustomer);
+        
+        int newAccPoint = customer.getAccumulatedPoint() + 1;
+        customer.setAccumulatedPoint(newAccPoint);
+        
+        return UtilDAO.queryUpdate(
+                QUERY_UPDATE_ACC_POINT, 
+                newAccPoint, 
+                idCustomer);
+    }
 }

@@ -73,6 +73,7 @@ public class HomeForm extends javax.swing.JFrame {
         columnOrderListModel.getColumn(3).setPreferredWidth(100);
         
         loadImageToView(urlDefault);
+//        loadImageToView_2("default.png");
         
         // Thiet lap giao dien co ban
         tableProduct.getTableHeader().setFont(new Font("Loma", Font.BOLD, 18));
@@ -119,6 +120,17 @@ public class HomeForm extends javax.swing.JFrame {
             Logger.getLogger(HomeForm.class.getName()).log(Level.SEVERE, null, ex);
         }
         Image dimg = img.getScaledInstance(lblImage.getWidth(), lblImage.getHeight(),Image.SCALE_SMOOTH);
+        lblImage.setIcon(new ImageIcon(dimg));
+    }
+    
+    public void loadImageToView_2(String nameImage) {
+        String nameStr = "material/" + nameImage;
+        System.out.println("Name: " + nameStr);
+        
+        ImageIcon imageDefault = new ImageIcon(nameStr);
+        Image image = imageDefault.getImage();
+        Image dimg = image.getScaledInstance(lblImage.getWidth(), lblImage.getHeight(),Image.SCALE_SMOOTH);
+        
         lblImage.setIcon(new ImageIcon(dimg));
     }
     
