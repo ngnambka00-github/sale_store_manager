@@ -705,10 +705,11 @@ public class HomeForm extends javax.swing.JFrame {
     );
 
     jPanel4.setBackground(new java.awt.Color(255, 204, 204));
-    jPanel4.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
+    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "Other's Manager", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Loma", 0, 24))); // NOI18N
+    jPanel4.setFont(new java.awt.Font("Loma", 0, 24)); // NOI18N
 
     btnCustomerForm.setFont(new java.awt.Font("Loma", 0, 24)); // NOI18N
-    btnCustomerForm.setText("Customer");
+    btnCustomerForm.setText("Customers");
     btnCustomerForm.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             btnCustomerFormActionPerformed(evt);
@@ -716,7 +717,7 @@ public class HomeForm extends javax.swing.JFrame {
     });
 
     btnCategoryForm.setFont(new java.awt.Font("Loma", 0, 24)); // NOI18N
-    btnCategoryForm.setText("Category");
+    btnCategoryForm.setText("Categories");
     btnCategoryForm.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             btnCategoryFormActionPerformed(evt);
@@ -732,7 +733,7 @@ public class HomeForm extends javax.swing.JFrame {
     });
 
     btnDiscountForm.setFont(new java.awt.Font("Loma", 0, 24)); // NOI18N
-    btnDiscountForm.setText("Discount");
+    btnDiscountForm.setText("Discounts");
     btnDiscountForm.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(java.awt.event.ActionEvent evt) {
             btnDiscountFormActionPerformed(evt);
@@ -757,13 +758,13 @@ public class HomeForm extends javax.swing.JFrame {
     jPanel4Layout.setVerticalGroup(
         jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
         .addGroup(jPanel4Layout.createSequentialGroup()
-            .addGap(65, 65, 65)
-            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                .addComponent(btnCustomerForm)
-                .addComponent(btnCategoryForm)
-                .addComponent(btnOrdersForm)
-                .addComponent(btnDiscountForm))
-            .addContainerGap(59, Short.MAX_VALUE))
+            .addGap(20, 20, 20)
+            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(btnCustomerForm, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+                .addComponent(btnCategoryForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnOrdersForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnDiscountForm, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(30, 30, 30))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -794,7 +795,7 @@ public class HomeForm extends javax.swing.JFrame {
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addContainerGap(20, Short.MAX_VALUE))
+            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     pack();
