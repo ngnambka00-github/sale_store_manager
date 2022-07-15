@@ -73,6 +73,7 @@ public class CustomerForm extends javax.swing.JFrame {
              txtEmail.setText(c.getEmail());
              txtName.setText(c.getName());
              txtPhoneNumber.setText(c.getPhoneNumber());
+             txtAccPoint.setText(String.valueOf(c.getAccumulatedPoint()));
         }
     }
     
@@ -101,6 +102,7 @@ public class CustomerForm extends javax.swing.JFrame {
         txtName.setText("");
         txtPhoneNumber.setText("");
         txtEmail.setText("");
+        txtAccPoint.setText("");
     }
 
     @SuppressWarnings("unchecked")
