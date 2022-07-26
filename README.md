@@ -1,7 +1,8 @@
 # Assignment of Advance Programing
 
-* Image displaying in frontend is absolute path. All images are at folder /material/images/...
-* Database is at folder /material/database/...
+## Preparation
+* Image displaying in frontend is absolute path so that you must change path in code when cloning to your device. All images are at folder /material/images/...
+* Database is at folder /material/database/... New Schema shoule be named "sale_manager" to match with code. Then changing your id and password mysql again.
 
 ## Contributed Members
 | Index | Full name           | ID |
